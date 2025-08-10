@@ -1,48 +1,67 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
+const bcrypt = require('bcryptjs'); // Fix the typo in the require statement
 
-const userSchema = new mongoose.Schema({
-    fiestName: {
-        type: String,
-        required: [true, "Firt name is required"],
-        trim: true
+const userSchema = new mongoose.Schema(
+  {
+    firstName: {
+      type: String,
+      required: [true, 'First name is required'],
+      trim: true
     },
     lastName: {
-        type: String,
-        required: [true, "Last name is required"],
-        trim: true
+      type: String,
+      required: [true, 'Last name is required'],
+      trim: true
     },
     email: {
-        type: String,
-        required: [true, "Email is required"],
-        unique: [true, "This email already exists"],
-        trim: true,
-        lowercase: true,
-        validate: [validator.isEmail, "Please provide a valide email"]
+      type: String,
+      required: [true, 'Email is required'],
+      unique: [true, 'This email already exists'],
+      trim: true,
+      lowercase: true,
+      validate: [validator.isEmail, 'Please provide a valid email']
     },
     password: {
-        type: String,
-        required: [true, "Password is required"],
-        minLength: [8, "Password must be 8 characters at least"],
-        maxLength: [20, "Password must be 20 characters at most"],
-        select: false
+      type: String,
+      required: [true, 'Password is required'],
+      minLength: [8, 'Password must be 8 characters at least'],
+      maxLength: [20, 'Password must be 20 characters at most'],
+      select: false
     },
     confirmPassword: {
-        type: String,
-        required: [true, "Please confirm your password"],
-        validate: {
-            validator: function (el) {
-                return el === this.password;
-            }
-        }
+      type: String,
+      required: [true, 'Please confirm your password'],
+      validate: {
+        validator: function (el) {
+          return el === this.password;
+        },
+        message: 'Passwords do not match'
+      }
     },
     role: {
-        type: String,
-        enun: ['admin', 'owner', 'player'],
-        default: 'player'
-    },
-}, { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } });
+      type: String,
+      enum: ['admin', 'owner', 'player'],
+      default: 'player'
+    }
+  },
+  { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
+);
+
+userSchema.pre('save', async function (next) {
+  if (this.isNew || this.isModified('password')) {
+    this.password = await bcrypt.hash(this.password, 12);
+    this.confirmPassword = undefined;
+    next();
+  }
+});
+
+userSchema.methods.checkPassword = async function (inputPass) {
+  // Singular "checkPassword"
+  console.log(bcrypt.compare(inputPass, this.password));
+  return await bcrypt.compare(inputPass, this.password);
+};
 
 const User = mongoose.model('user', userSchema);
 
-module.exports(User)
+module.exports = User;
