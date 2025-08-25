@@ -43,7 +43,16 @@ const userSchema = new mongoose.Schema(
       type: String,
       enum: ['admin', 'owner', 'player'],
       default: 'player'
-    }
+    },
+    profileImage: {
+      type: String,
+      required: [true, 'A tour must have a cover image']
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now(),
+      select: false
+    },
   },
   { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
@@ -58,7 +67,6 @@ userSchema.pre('save', async function (next) {
 
 userSchema.methods.checkPassword = async function (inputPass) {
   // Singular "checkPassword"
-  console.log(bcrypt.compare(inputPass, this.password));
   return await bcrypt.compare(inputPass, this.password);
 };
 

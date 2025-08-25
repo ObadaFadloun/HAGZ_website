@@ -38,8 +38,6 @@ exports.register = async (req, res) => {
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    console.log('email', email);
-    console.log('password', password);
 
     // Check the existence of the email and password
     if (!(email && password)) {
