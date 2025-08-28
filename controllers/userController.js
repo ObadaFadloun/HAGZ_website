@@ -1,6 +1,7 @@
 const User = require('../models/userModel');
+const catchAsync = require('../utils/catchAsync')
 
-exports.register = async (req, res) => {
+exports.register = catchAsync(async (req, res) => {
   try {
     const { firstName, lastName, email, password, confirmPassword } = req.body;
 
@@ -33,9 +34,9 @@ exports.register = async (req, res) => {
       message: 'Server error'
     });
   }
-};
+});
 
-exports.login = async (req, res) => {
+exports.login = catchAsync(async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -70,4 +71,4 @@ exports.login = async (req, res) => {
       message: 'Server error'
     });
   }
-};
+});
