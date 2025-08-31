@@ -1,5 +1,6 @@
+const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
-const catchAsync = require('../utils/catchAsync')
+const catchAsync = require('../utils/catchAsync');
 
 exports.register = catchAsync(async (req, res) => {
   try {
@@ -20,10 +21,15 @@ exports.register = catchAsync(async (req, res) => {
       password,
       confirmPassword
     });
-    // todo: generate a jwt token then send it with the response.
+
+    // generate a jwt token.
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: process.env.JWT_EXPIRES_IN
+    });
 
     res.status(201).json({
       status: 'success',
+      token,
       data: user
     });
   } catch (err) {
@@ -49,7 +55,6 @@ exports.login = catchAsync(async (req, res) => {
     }
 
     const user = await User.findOne({ email }).select('+password');
-    console.log('user', user);
 
     if (!user || !(await user.checkPassword(password))) {
       return res.status(401).json({
@@ -58,9 +63,13 @@ exports.login = catchAsync(async (req, res) => {
       });
     }
 
-    // todo: generate token
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: process.env.JWT_EXPIRES_IN
+    });
+
     res.status(200).json({
       status: 'success',
+      token,
       data: user
       // token
     });
