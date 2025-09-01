@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
 const catchAsync = require('../utils/catchAsync');
+const AppError = require('../utils/appError');
 
 exports.register = catchAsync(async (req, res) => {
   try {
@@ -42,25 +43,18 @@ exports.register = catchAsync(async (req, res) => {
   }
 });
 
-exports.login = catchAsync(async (req, res) => {
+exports.login = catchAsync(async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
-    // Check the existence of the email and password
     if (!(email && password)) {
-      return res.status(400).json({
-        status: 'fail',
-        message: 'Please provide email and password'
-      });
+      return next(new AppError('Please provide email and password', 400));
     }
 
     const user = await User.findOne({ email }).select('+password');
 
     if (!user || !(await user.checkPassword(password))) {
-      return res.status(401).json({
-        status: 'fail',
-        message: 'Your email or password is not correct'
-      });
+      return next(new AppError('Your email or password is not correct', 401));
     }
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
@@ -71,13 +65,9 @@ exports.login = catchAsync(async (req, res) => {
       status: 'success',
       token,
       data: user
-      // token
     });
   } catch (err) {
     console.error(err);
-    return res.status(500).json({
-      status: 'error',
-      message: 'Server error'
-    });
+    return next(new AppError('Server error', 500));
   }
 });
