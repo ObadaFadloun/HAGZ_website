@@ -47,7 +47,6 @@ const userSchema = new mongoose.Schema(
     },
     profileImage: {
       type: String,
-      required: [true, 'User must have a cover image']
     },
     createdAt: {
       type: Date,
