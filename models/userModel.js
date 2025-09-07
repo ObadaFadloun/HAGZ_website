@@ -37,7 +37,8 @@ const userSchema = new mongoose.Schema(
           return el === this.password;
         },
         message: 'Passwords do not match'
-      }
+      },
+      select: false
     },
     passwordChangedAt: Date,
     role: {
@@ -65,9 +66,9 @@ userSchema.pre('save', async function (next) {
   }
 });
 
-userSchema.methods.checkPassword = async function (inputPass) {
+userSchema.methods.checkPassword = async function (candidatePassworn, userPassword) {
   // Singular "checkPassword"
-  return await bcrypt.compare(inputPass, this.password);
+  return await bcrypt.compare(candidatePassworn, userPassword);
 };
 
 userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {

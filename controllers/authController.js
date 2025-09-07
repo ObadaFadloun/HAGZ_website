@@ -51,13 +51,19 @@ exports.login = catchAsync(async (req, res, next) => {
     const { email, password } = req.body;
 
     if (!(email && password)) {
-      return next(new AppError('Please provide email and password', 400));
+      return res.status(400).json({
+        status: 'Please provide email and password',
+        message: 'Server error'
+      });
     }
 
     const user = await User.findOne({ email }).select('+password');
 
-    if (!user || !(await user.checkPassword(password))) {
-      return next(new AppError('Your email or password is not correct', 401));
+    if (!user || !(await user.checkPassword(password, user.password))) {
+      return res.status(401).json({
+        status: 'Your email or password is not correct',
+        message: 'Server error'
+      });
     }
 
     const token = signToken(user._id);
@@ -69,7 +75,10 @@ exports.login = catchAsync(async (req, res, next) => {
     });
   } catch (err) {
     console.error(err);
-    return next(new AppError('Server error', 500));
+    return res.status(500).json({
+      status: 'error',
+      message: 'Server error'
+    });
   }
 });
 
