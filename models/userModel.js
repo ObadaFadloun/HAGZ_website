@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs'); // Fix the typo in the require statement
@@ -41,19 +42,21 @@ const userSchema = new mongoose.Schema(
       select: false
     },
     passwordChangedAt: Date,
+    passwordResetToken: String,
+    passwordResetExpires: Date,
     role: {
       type: String,
       enum: ['admin', 'owner', 'player'],
       default: 'player'
     },
     profileImage: {
-      type: String,
+      type: String
     },
     createdAt: {
       type: Date,
       default: Date.now(),
       select: false
-    },
+    }
   },
   { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
@@ -66,7 +69,10 @@ userSchema.pre('save', async function (next) {
   }
 });
 
-userSchema.methods.checkPassword = async function (candidatePassworn, userPassword) {
+userSchema.methods.checkPassword = async function (
+  candidatePassworn,
+  userPassword
+) {
   // Singular "checkPassword"
   return await bcrypt.compare(candidatePassworn, userPassword);
 };
@@ -83,6 +89,19 @@ userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
 
   // False means NOT changes
   return false;
+};
+
+userSchema.methods.createPasswordResetToken = function () {
+  const resetToken = crypto.randomBytes(32).toString('hex');
+
+  this.passwordResetToken = crypto
+    .createHash('sha256')
+    .update(resetToken)
+    .digest('hex');
+
+  this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
+
+  return resetToken;
 };
 
 const User = mongoose.model('user', userSchema);
