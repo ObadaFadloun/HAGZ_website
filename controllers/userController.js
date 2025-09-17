@@ -61,6 +61,15 @@ exports.updateMe = catchAsync(async (req, res, next) => {
   });
 });
 
+exports.deleteMe = catchAsync(async (req, res, next) => {
+  await User.findByIdAndUpdate(req.user.id, { active: false });
+
+  res.status(204).json({
+    status: 'success',
+    data: null
+  });
+});
+
 exports.getUser = catchAsync(async (req, res, next) => {
   const user = await User.findById(req.params.id);
   // User.findOne({ _id: req.params.id })
@@ -74,36 +83,5 @@ exports.getUser = catchAsync(async (req, res, next) => {
     data: {
       user
     }
-  });
-});
-
-// exports.updateMe = catchAsync(async (req, res, next) => {
-//   const user = await User.findByIdAndUpdate(req.params.id, req.body, {
-//     new: true,
-//     runValidators: true
-//   });
-
-//   if (!user) {
-//     return next(new AppError('No user fount with that ID', 404));
-//   }
-
-//   res.status(200).json({
-//     status: 'success',
-//     data: {
-//       user
-//     }
-//   });
-// });
-
-exports.deleteMe = catchAsync(async (req, res, next) => {
-  const user = await User.findByIdAndDelete(req.params.id);
-
-  if (!user) {
-    return next(new AppError('No user fount with that ID', 404));
-  }
-
-  res.status(200).json({
-    status: 'success',
-    message: 'User was deleted successfully'
   });
 });
