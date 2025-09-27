@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Football Field Management System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .form-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        
+        @media (max-width: 900px) {
+            .form-container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .form-section {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            color: #2a5298;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eaeaea;
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title i {
+            margin-right: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #444;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 16px;
+            transition: border 0.3s;
+        }
+        
+        input:focus, select:focus, textarea:focus {
+            border-color: #2a5298;
+            outline: none;
+        }
+        
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .checkbox-item input {
+            width: auto;
+            margin-right: 8px;
+        }
+        
+        .time-inputs {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .time-inputs > div {
+            flex: 1;
+        }
+        
+        .image-upload {
+            border: 2px dashed #ccc;
+            padding: 20px;
+            text-align: center;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: border 0.3s;
+        }
+        
+        .image-upload:hover {
+            border-color: #2a5298;
+        }
+        
+        .upload-icon {
+            font-size: 40px;
+            color: #2a5298;
+            margin-bottom: 10px;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            border: none;
+            padding: 14px 25px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.3s;
+            display: block;
+            width: 100%;
+            margin-top: 10px;
+        }
+        
+        .btn:hover {
+            opacity: 0.9;
+        }
+        
+        .image-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .preview-item {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .remove-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: rgba(255,255,255,0.8);
+            color: #ff0000;
+            border: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .rating {
+            display: flex;
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .rating i {
+            color: #ddd;
+            font-size: 24px;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+        
+        .rating i.active {
+            color: #ffc107;
+        }
+        
+        .review {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .reviewer {
+            font-weight: 600;
+        }
+        
+        .review-date {
+            color: #777;
+        }
+        
+        .review-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+        }
+        
+        .review-actions button {
+            background: none;
+            border: none;
+            color: #555;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .review-actions button:hover {
+            color: #2a5298;
+        }
+        
+        .system-info {
+            display: flex;
+            justify-content: space-between;
+            color: #777;
+            font-size: 14px;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+        
+        .validation-message {
+            color: #d9534f;
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+        
+        .success-message {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        input:invalid, select:invalid, textarea:invalid {
+            border-color: #d9534f;
+        }
+        
+        input:valid, select:valid, textarea:valid {
+            border-color: #5cb85c;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Football Field Management System</h1>
+            <p class="subtitle">Manage your sports facilities with ease</p>
+        </header>
+        
+        <div class="success-message" id="successMessage">
+            <i class="fas fa-check-circle"></i> Football field information saved successfully!
+        </div>
+        
+        <form id="fieldForm">
+            <div class="form-container">
+                <div class="left-column">
+                    <!-- Basic Information Section -->
+                    <div class="form-section">
+                        <h2 class="section-title"><i class="fas fa-info-circle"></i> Basic Information</h2>
+                        
+                        <div class="form-group">
+                            <label for="name">Field Name *</label>
+                            <input type="text" id="name" name="name" required placeholder="Enter field name">
+                            <div class="validation-message" id="nameValidation">Football field name is required</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="location">Location *</label>
+                            <input type="text" id="location" name="location" required placeholder="Enter field location">
+                            <div class="validation-message" id="locationValidation">Football field location is required</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="mapLink">Map Link *</label>
+                            <input type="url" id="mapLink" name="mapLink" required placeholder="https://maps.example.com/field">
+                            <div class="validation-message" id="mapLinkValidation">Please provide a valid URL for the map link</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="pricing">Pricing Information *</label>
+                            <textarea id="pricing" name="pricing" required placeholder="Enter pricing details"></textarea>
+                            <div class="validation-message" id="pricingValidation">Pricing information is required</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="ownerId">Owner ID *</label>
+                            <input type="text" id="ownerId" name="ownerId" required placeholder="Enter owner ID">
+                            <div class="validation-message" id="ownerIdValidation">Football field owner id is required</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Facilities Section -->
+                    <div class="form-section">
+                        <h2 class="section-title"><i class="fas fa-restroom"></i> Facilities</h2>
+                        
+                        <div class="checkbox-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="bathrooms" name="bathrooms">
+                                <label for="bathrooms">Bathrooms</label>
+                            </div>
+                            
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="changingRooms" name="changingRooms">
+                                <label for="changingRooms">Changing Rooms</label>
+                            </div>
+                            
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="nightLights" name="nightLights">
+                                <label for="nightLights">Night Lights</label>
+                            </div>
+                            
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="parking" name="parking">
+                                <label for="parking">Parking</label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="capacity">Capacity (number of players) *</label>
+                            <input type="number" id="capacity" name="capacity" required min="1" placeholder="e.g., 22">
+                            <div class="validation-message" id="capacityValidation">Capacity is required and must be at least 1</div>
+                        </div>
+                    </div>
+                    
+                    <!-- Media Section -->
+                    <div class="form-section">
+                        <h2 class="section-title"><i class="fas fa-camera"></i> Media</h2>
+                        
+                        <div class="form-group">
+                            <label>Upload Images</label>
+                            <div class="image-upload" id="imageUpload">
+                                <div class="upload-icon">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                </div>
+                                <p>Click to upload or drag and drop</p>
+                                <p>PNG, JPG up to 5MB</p>
+                                <input type="file" id="imageInput" accept="image/*" multiple style="display: none;">
+                            </div>
+                            
+                            <div class="image-preview" id="imagePreview"></div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="video">Video URL (Optional)</label>
+                            <input type="url" id="video" name="video" placeholder="https://youtube.com/example">
+                            <div class="validation-message" id="videoValidation">Please provide a valid URL for the video</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="right-column">
+                    <!-- Partnerships Section -->
+                    <div class="form-section">
+                        <h2 class="section-title"><i class="fas fa-handshake"></i> Partnerships</h2>
+                        
+                        <div class="form-group">
+                            <label for="cafeteria">Cafeteria/Partnerships</label>
+                            <textarea id="cafeteria" name="cafeteria" placeholder="List cafe, gym, shop partnerships"></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="equipment">Equipment Rentals</label>
+                            <textarea id="equipment" name="equipment" placeholder="Balls, jerseys, shoes, etc."></textarea>
+                        </div>
+                    </div>
+                    
+                    <!-- Availability Section -->
+                    <div class="form-section">
+                        <h2 class="section-title"><i class="fas fa-clock"></i> Availability</h2>
+                        
+                        <div class="form-group">
+                            <label>Opening Hours *</label>
+                            <div class="time-inputs">
+                                <div>
+                                    <label for="openTime">Open Time</label>
+                                    <input type="time" id="openTime" name="openTime" required>
+                                </div>
+                                <div>
+                                    <label for="closeTime">Close Time</label>
+                                    <input type="time" id="closeTime" name="closeTime" required>
+                                </div>
+                            </div>
+                            <div class="validation-message" id="timeValidation">Opening hours are required</div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Closed Days</label>
+                            <div class="checkbox-group">
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="sunday" name="closedDays" value="Sunday">
+                                    <label for="sunday">Sunday</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="monday" name="closedDays" value="Monday">
+                                    <label for="monday">Monday</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="tuesday" name="closedDays" value="Tuesday">
+                                    <label for="tuesday">Tuesday</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="wednesday" name="closedDays" value="Wednesday">
+                                    <label for="wednesday">Wednesday</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="thursday" name="closedDays" value="Thursday">
+                                    <label for="thursday">Thursday</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="friday" name="closedDays" value="Friday">
+                                    <label for="friday">Friday</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="saturday" name="closedDays" value="Saturday">
+                                    <label for="saturday">Saturday</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Extras Section -->
+                    <div class="form-section">
+                        <h2 class="section-title"><i class="fas fa-star"></i> Extras</h2>
+                        
+                        <div class="form-group">
+                            <div class="checkbox-item">
+                                <input type="checkbox" id="weatherIntegration" name="weatherIntegration">
+                                <label for="weatherIntegration">Weather Integration Enabled</label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Tags/Labels</label>
+                            <div class="checkbox-group">
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="kidsFriendly" name="tags" value="Kids-friendly">
+                                    <label for="kidsFriendly">Kids-friendly</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="professional" name="tags" value="Professional">
+                                    <label for="professional">Professional</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="turf" name="tags" value="Turf">
+                                    <label for="turf">Turf</label>
+                                </div>
+                                <div class="checkbox-item">
+                                    <input type="checkbox" id="grass" name="tags" value="Grass">
+                                    <label for="grass">Grass</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Reviews & Ratings Section -->
+                    <div class="form-section">
+                        <h2 class="section-title"><i class="fas fa-comments"></i> Reviews & Ratings</h2>
+                        
+                        <div class="form-group">
+                            <label>Average Rating</label>
+                            <div class="rating" id="rating">
+                                <i class="fas fa-star" data-value="1"></i>
+                                <i class="fas fa-star" data-value="2"></i>
+                                <i class="fas fa-star" data-value="3"></i>
+                                <i class="fas fa-star" data-value="4"></i>
+                                <i class="fas fa-star" data-value="5"></i>
+                            </div>
+                            <input type="hidden" id="averageRating" name="averageRating" value="0">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="totalReviews">Total Reviews</label>
+                            <input type="number" id="totalReviews" name="totalReviews" min="0" value="0">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Sample Reviews (Read-only)</label>
+                            
+                            <div class="review">
+                                <div class="review-header">
+                                    <span class="reviewer">John D.</span>
+                                    <span class="review-date">2023-10-15</span>
+                                </div>
+                                <div class="rating">
+                                    <i class="fas fa-star active"></i>
+                                    <i class="fas fa-star active"></i>
+                                    <i class="fas fa-star active"></i>
+                                    <i class="fas fa-star active"></i>
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <p>Great field with excellent facilities. The turf is well maintained and the lighting is perfect for evening games.</p>
+                                <div class="review-actions">
+                                    <button><i class="fas fa-thumbs-up"></i> 12</button>
+                                    <button><i class="fas fa-thumbs-down"></i> 2</button>
+                                </div>
+                            </div>
+                            
+                            <div class="review">
+                                <div class="review-header">
+                                    <span class="reviewer">Sarah M.</span>
+                                    <span class="review-date">2023-09-28</span>
+                                </div>
+                                <div class="rating">
+                                    <i class="fas fa-star active"></i>
+                                    <i class="fas fa-star active"></i>
+                                    <i class="fas fa-star active"></i>
+                                    <i class="fas fa-star active"></i>
+                                    <i class="fas fa-star active"></i>
+                                </div>
+                                <p>Best football field in the city! The changing rooms are clean and the equipment rental service is very convenient.</p>
+                                <div class="review-actions">
+                                    <button><i class="fas fa-thumbs-up"></i> 18</button>
+                                    <button><i class="fas fa-thumbs-down"></i> 1</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <button type="submit" class="btn">Save Football Field</button>
+            
+            <div class="system-info">
+                <span>Created at: <span id="createdAt">-</span></span>
+                <span>Updated at: <span id="updatedAt">-</span></span>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set current date for created/updated
+            const now = new Date();
+            document.getElementById('createdAt').textContent = now.toLocaleString();
+            document.getElementById('updatedAt').textContent = now.toLocaleString();
+            
+            // Image upload functionality
+            const imageUpload = document.getElementById('imageUpload');
+            const imageInput = document.getElementById('imageInput');
+            const imagePreview = document.getElementById('imagePreview');
+            
+            imageUpload.addEventListener('click', () => {
+                imageInput.click();
+            });
+            
+            imageUpload.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                imageUpload.style.borderColor = '#2a5298';
+            });
+            
+            imageUpload.addEventListener('dragleave', () => {
+                imageUpload.style.borderColor = '#ccc';
+            });
+            
+            imageUpload.addEventListener('drop', (e) => {
+                e.preventDefault();
+                imageUpload.style.borderColor = '#ccc';
+                
+                if (e.dataTransfer.files.length > 0) {
+                    imageInput.files = e.dataTransfer.files;
+                    handleImageUpload();
+                }
+            });
+            
+            imageInput.addEventListener('change', handleImageUpload);
+            
+            function handleImageUpload() {
+                const files = imageInput.files;
+                
+                if (!files || files.length === 0) return;
+                
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    
+                    if (!file.type.match('image.*')) {
+                        showValidationMessage('Please upload only image files', 'imageValidation');
+                        continue;
+                    }
+                    
+                    if (file.size > 5 * 1024 * 1024) {
+                        showValidationMessage('Image size must be less than 5MB', 'imageValidation');
+                        continue;
+                    }
+                    
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        const previewItem = document.createElement('div');
+                        previewItem.className = 'preview-item';
+                        
+                        const img = document.createElement('img');
+                        img.src = e.target.result;
+                        
+                        const removeBtn = document.createElement('button');
+                        removeBtn.className = 'remove-btn';
+                        removeBtn.innerHTML = '&times;';
+                        removeBtn.onclick = function() {
+                            previewItem.remove();
+                        };
+                        
+                        previewItem.appendChild(img);
+                        previewItem.appendChild(removeBtn);
+                        imagePreview.appendChild(previewItem);
+                    };
+                    
+                    reader.readAsDataURL(file);
+                }
+            }
+            
+            // Star rating functionality
+            const stars = document.querySelectorAll('.rating#rating .fa-star');
+            const averageRatingInput = document.getElementById('averageRating');
+            
+            stars.forEach(star => {
+                star.addEventListener('click', () => {
+                    const value = parseInt(star.getAttribute('data-value'));
+                    averageRatingInput.value = value;
+                    
+                    stars.forEach(s => {
+                        const starValue = parseInt(s.getAttribute('data-value'));
+                        if (starValue <= value) {
+                            s.classList.add('active');
+                        } else {
+                            s.classList.remove('active');
+                        }
+                    });
+                });
+                
+                star.addEventListener('mouseover', () => {
+                    const value = parseInt(star.getAttribute('data-value'));
+                    
+                    stars.forEach(s => {
+                        const starValue = parseInt(s.getAttribute('data-value'));
+                        if (starValue <= value) {
+                            s.style.color = '#ffc107';
+                        } else {
+                            s.style.color = '#ddd';
+                        }
+                    });
+                });
+                
+                star.addEventListener('mouseout', () => {
+                    const currentRating = parseInt(averageRatingInput.value);
+                    
+                    stars.forEach(s => {
+                        const starValue = parseInt(s.getAttribute('data-value'));
+                        if (starValue <= currentRating) {
+                            s.style.color = '#ffc107';
+                        } else {
+                            s.style.color = '#ddd';
+                        }
+                    });
+                });
+            });
+            
+            // Form validation
+            const form = document.getElementById('fieldForm');
+            const inputs = form.querySelectorAll('input[required], textarea[required], select[required]');
+            
+            inputs.forEach(input => {
+                input.addEventListener('blur', () => validateField(input));
+                input.addEventListener('input', () => clearValidation(input));
+            });
+            
+            function validateField(field) {
+                let isValid = true;
+                let message = '';
+                
+                if (field.value.trim() === '') {
+                    isValid = false;
+                    message = field.id + ' is required';
+                } else if (field.type === 'url' && !isValidUrl(field.value)) {
+                    isValid = false;
+                    message = 'Please provide a valid URL';
+                } else if (field.id === 'capacity' && field.value < 1) {
+                    isValid = false;
+                    message = 'Capacity must be at least 1';
+                }
+                
+                if (!isValid) {
+                    showValidationMessage(message, field.id + 'Validation');
+                } else {
+                    clearValidation(field);
+                }
+                
+                return isValid;
+            }
+            
+            function isValidUrl(string) {
+                try {
+                    new URL(string);
+                    return true;
+                } catch (_) {
+                    return false;
+                }
+            }
+            
+            function showValidationMessage(message, elementId) {
+                const validationElement = document.getElementById(elementId);
+                if (validationElement) {
+                    validationElement.textContent = message;
+                    validationElement.style.display = 'block';
+                }
+            }
+            
+            function clearValidation(field) {
+                const validationElement = document.getElementById(field.id + 'Validation');
+                if (validationElement) {
+                    validationElement.style.display = 'none';
+                }
+            }
+            
+            // Form submission
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                let isValid = true;
+                
+                inputs.forEach(input => {
+                    if (!validateField(input)) {
+                        isValid = false;
+                    }
+                });
+                
+                if (isValid) {
+                    // Show success message
+                    const successMessage = document.getElementById('successMessage');
+                    successMessage.style.display = 'block';
+                    
+                    // Update the updatedAt timestamp
+                    document.getElementById('updatedAt').textContent = new Date().toLocaleString();
+                    
+                    // Hide success message after 5 seconds
+                    setTimeout(() => {
+                        successMessage.style.display = 'none';
+                    }, 5000);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
