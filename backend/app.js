@@ -1,5 +1,6 @@
 const dotenv = require('dotenv').config({ path: './config.env' });
 const express = require('express');
+const cors = require('cors');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
@@ -10,8 +11,17 @@ const hpp = require('hpp');
 const AppError = require('./utils/appError');
 const globelErrorHandler = require('./controllers/errorController');
 const userRouter = require('./routes/userRouters');
+const authRouter = require("./routes/authRouters")
 
 const app = express();
+
+app.use(
+  cors({
+    origin: 'http://localhost:5173', // your frontend URL
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true
+  })
+);
 
 // 1) Globel middleware
 // Set security HTTP headers
@@ -34,10 +44,10 @@ app.use('/api', limiter);
 app.use(express.json({ limit: '10kb' }));
 
 // Data sanitization against NoSQL query injection
-app.use(mongoSnaitize());
+// app.use(mongoSnaitize());
 
 // Data sanitization against XSS
-app.use(xss());
+// app.use(xss());
 
 // Prevent parameter pollution
 app.use(
@@ -49,6 +59,7 @@ app.use(
 // Serving static files
 app.use(express.static(`${__dirname}/public`));
 
+app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/users', userRouter);
 
 app.use((req, res, next) => {

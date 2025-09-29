@@ -5,23 +5,12 @@ const express = require('express');
 
 const router = express.Router();
 
-router.route('/register').post(authController.register);
-router.route('/login').post(authController.login);
-
-router.post('/forgotPassword', authController.forgotPassword);
-router.patch('/resetPassword/:token', authController.resetPassword);
-router.patch(
-  '/updateMyPassword',
-  authController.protect,
-  authController.updatePassword
-);
-
 router.patch('/updateMe', authController.protect, userController.updateMe);
 router.delete('/deleteMe', authController.protect, userController.deleteMe);
 
 // router.post('/logout', userController.logout);
 
-// User Profile & Actions (Protected - requires authentication)
+// User Profile & Actions (Protected - requires authentication);
 // router.get('/profile', authUser, userController.getUserProfile);
 // router.put('/profile', authUser, userController.updateUserProfile);
 
@@ -46,7 +35,7 @@ router.delete('/deleteMe', authController.protect, userController.deleteMe);
 // Route to request becoming an Owner (Protected)
 // router.post('/request-owner', authUser, userController.requestOwnerStatus);
 
-router.route('/').get(authController.protect, userController.getAllUsers);
+router.route('/').get(userController.getAllUsers);
 // router
 //   .route('/:id')
 //   .get(userController.getUser)
