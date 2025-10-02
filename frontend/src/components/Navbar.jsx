@@ -1,75 +1,77 @@
 // src/components/Navbar.jsx
 import { Sun, Moon } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import Button from "./Button";
 
-export default function Navbar({ user, onLogout, darkMode, setDarkMode }) {
+export default function Navbar({ user, darkMode, setDarkMode }) {
     const navigate = useNavigate();
+    const location = useLocation();
 
     const isAuthPage = location.pathname === "/auth";
 
     return (
-        <header className="flex justify-between items-center px-6 py-4 shadow-md bg-white dark:bg-green-600 text-gray-50">
+        <header className="fixed top-0 left-0 w-full flex justify-between items-center px-6 py-3 shadow-lg bg-gradient-to-r from-green-600 to-green-800 text-white z-50">
             {/* Logo */}
             <h1
                 onClick={() => navigate("/homepage")}
-                className="text-2xl font-bold cursor-pointer text-gray-200 text-gray-50"
+                className="text-2xl font-extrabold cursor-pointer tracking-wide hover:text-green-900 transform transition duration-300 ease-in-out hover:scale-110"
             >
                 HAGZ
             </h1>
 
             {/* Nav links */}
             <nav className="hidden md:flex space-x-6">
-                <Button onClick={() => navigate("/homepage")} className="hover:text-green-900 cursor-pointer">
+                <Button
+                    onClick={() => navigate("/homepage")}
+                    className="hover:bg-green-700 px-3 py-2 rounded-md transition-all duration-300 font-semibold cursor-pointer"
+                >
                     Home
                 </Button>
-                <Button onClick={() => navigate("/fields")} className="hover:text-green-900 cursor-pointer">
+                <Button
+                    onClick={() => navigate("/fields")}
+                    className="hover:bg-green-700 px-3 py-2 rounded-md transition-all duration-300 font-semibold cursor-pointer"
+                >
                     Fields
                 </Button>
-                <Button onClick={() => navigate("/teams")} className="hover:text-green-900 cursor-pointer">
+                <Button
+                    onClick={() => navigate("/teams")}
+                    className="hover:bg-green-700 px-3 py-2 rounded-md transition-all duration-300 font-semibold cursor-pointer"
+                >
                     Teams
                 </Button>
-                <Button onClick={() => navigate("/offers")} className="hover:text-green-900 cursor-pointer">
+                <Button
+                    onClick={() => navigate("/offers")}
+                    className="hover:bg-green-700 px-3 py-2 rounded-md transition-all duration-300 font-semibold cursor-pointer"
+                >
                     Offers
                 </Button>
-                <Button onClick={() => navigate("/about")} className="hover:text-green-900 cursor-pointer">
+                <Button
+                    onClick={() => navigate("/about")}
+                    className="hover:bg-green-700 px-3 py-2 rounded-md transition-all duration-300 font-semibold cursor-pointer"
+                >
                     About
                 </Button>
-                <Button onClick={() => navigate("/contact")} className="hover:text-green-900 cursor-pointer">
+                <Button
+                    onClick={() => navigate("/contact")}
+                    className="hover:bg-green-700 px-3 py-2 rounded-md transition-all duration-300 font-semibold cursor-pointer"
+                >
                     Contact
                 </Button>
             </nav>
 
             {/* Right Side */}
             <div className="flex items-center space-x-3">
-                {!user && !isAuthPage && (
-                    <>
-                        <Button
-                            onClick={() => navigate("/auth?mode=login")}
-                            className="px-3 py-2 rounded-lg text-sm bg-gray-200 text-black hover:bg-green-800 hover:text-white cursor-pointer"
-                        >
-                            Login
-                        </Button>
+                <Button
+                    onClick={() => navigate("/auth")}
+                    className="px-4 py-2 rounded-lg bg-gradient-to-r from-gray-200 to-gray-400 text-green-700 font-bold shadow-md hover:bg-gray-100 cursor-pointer transform transition duration-500 ease-in-out hover:scale-105 hover:shadow-xl"
+                >
+                    Login
+                </Button>
 
-                        <Button
-                            onClick={() => navigate("/auth?mode=signup")}
-                            className="px-3 py-2 rounded-lg text-sm bg-gray-200 text-black hover:bg-gray-600 hover:text-white cursor-pointer"
-                        >
-                            Signup
-                        </Button>
-                    </>
-                )}
-
-                {user && (
-                    <Button
-                        onClick={onLogout}
-                        className="px-3 py-2 border rounded-lg text-sm hover:bg-gray-100 text-black cursor-pointer"
-                    >
-                        Logout
-                    </Button>
-                )}
-
-                <Button onClick={() => setDarkMode(!darkMode)} className="p-2 cursor-pointer">
+                <Button
+                    onClick={() => setDarkMode(!darkMode)}
+                    className="p-2 rounded-full bg-green-700 hover:bg-green-600 shadow-md transition-all duration-300"
+                >
                     {darkMode ? <Sun /> : <Moon />}
                 </Button>
             </div>
