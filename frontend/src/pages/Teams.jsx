@@ -8,9 +8,9 @@ const fadeUp = (delay = 0) => ({
   visible: { opacity: 1, y: 0, transition: { duration: 0.7, delay } },
 });
 
-export default function Teams() {
+export default function Teams({ darkMode }) {
   return (
-    <section className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-br from-gray-50 to-gray-400 px-6 md:px-16 py-20">
+    <section className={`min-h-screen flex flex-col justify-center items-center bg-gradient-to-br ${darkMode ? "from-gray-900 dark:to-gray-800" : "from-gray-50 to-gray-400"}`}>
       {/* Title */}
       <AnimatedText
         text="Find Your Perfect Team"
@@ -23,9 +23,9 @@ export default function Teams() {
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true }}
-        className="max-w-3xl text-lg md:text-xl text-gray-800 text-center mb-12 leading-relaxed"
+        className={`max-w-3xl text-lg md:text-xl text-center mb-12 leading-relaxed ${darkMode ? "text-gray-300" : "text-gray-800"}`}
       >
-        At <span className="font-semibold text-green-600">HAGZ</span>, we believe football is better
+        At <span className="font-bold text-green-600">HAGZ</span>, we believe football is better
         together. Whether you're searching for teammates, joining an existing squad, or looking to
         challenge another team, our platform helps you connect and build strong communities on and
         off the pitch.
@@ -40,13 +40,13 @@ export default function Teams() {
           whileInView="visible"
           viewport={{ once: true }}
           whileHover={{ scale: 1.05 }}
-          className="p-6 bg-gradient-to-br from-gray-600 to-gray-950 rounded-2xl shadow-lg text-center"
+          className={`p-6 rounded-2xl shadow-lg text-center bg-gradient-to-br ${darkMode ? "from-gray-50 to-gray-400" : "from-gray-900 to-gray-700"}`}
         >
           <AnimatedText
             text="Create a Team"
             className="text-2xl font-bold mb-4 text-green-400"
           />
-          <p className="text-gray-50">
+          <p className={`${darkMode ? "text-gray-800" : "text-gray-50"}`}>
             Start your own football team and invite your friends or open it for new players in your
             area.
           </p>
@@ -59,13 +59,13 @@ export default function Teams() {
           whileInView="visible"
           viewport={{ once: true }}
           whileHover={{ scale: 1.05 }}
-          className="p-6 bg-gradient-to-br from-gray-600 to-gray-950 rounded-2xl shadow-lg text-center"
+          className={`p-6 rounded-2xl shadow-lg text-center bg-gradient-to-br ${darkMode ? "from-gray-50 to-gray-400" : "from-gray-900 to-gray-700"}`}
         >
           <AnimatedText
             text="Join a Squad"
             className="text-2xl font-bold mb-4 text-green-400"
           />
-          <p className="text-gray-50">
+          <p className={`${darkMode ? "text-gray-800" : "text-gray-50"}`}>
             Browse available squads and instantly join a team that matches your skills and passion.
           </p>
         </motion.div>
@@ -77,13 +77,13 @@ export default function Teams() {
           whileInView="visible"
           viewport={{ once: true }}
           whileHover={{ scale: 1.05 }}
-          className="p-6 bg-gradient-to-br from-gray-600 to-gray-950 rounded-2xl shadow-lg text-center"
+          className={`p-6 rounded-2xl shadow-lg text-center bg-gradient-to-br ${darkMode ? "from-gray-50 to-gray-400" : "from-gray-900 to-gray-700"}`}
         >
           <AnimatedText
             text="Challenge Matches"
             className="text-2xl font-bold mb-4 text-green-400"
           />
-          <p className="text-gray-50">
+          <p className={`${darkMode ? "text-gray-800" : "text-gray-50"}`}>
             Set up friendly matches between teams, track results, and grow your community with fun
             competitions.
           </p>

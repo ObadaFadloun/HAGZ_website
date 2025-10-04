@@ -1,13 +1,10 @@
 // src/components/Navbar.jsx
 import { Sun, Moon } from "lucide-react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Button from "./Button";
 
-export default function Navbar({ user, darkMode, setDarkMode }) {
+export default function Navbar({darkMode, setDarkMode}) {
     const navigate = useNavigate();
-    const location = useLocation();
-
-    const isAuthPage = location.pathname === "/auth";
 
     return (
         <header className="fixed top-0 left-0 w-full flex justify-between items-center px-6 py-3 shadow-lg bg-gradient-to-r from-green-600 to-green-800 text-white z-50">
@@ -70,7 +67,7 @@ export default function Navbar({ user, darkMode, setDarkMode }) {
 
                 <Button
                     onClick={() => setDarkMode(!darkMode)}
-                    className="p-2 rounded-full bg-green-700 hover:bg-green-600 shadow-md transition-all duration-300"
+                    className={`p-2 rounded-full shadow-md transition-all duration-300 text-green-700 cursor-pointer bg-gradient-to-r ${darkMode ? "from-gray-200 to-gray-400" : "from-gray-900 to-gray-700"}`}
                 >
                     {darkMode ? <Sun /> : <Moon />}
                 </Button>

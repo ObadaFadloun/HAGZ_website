@@ -3,35 +3,35 @@ import { motion } from "framer-motion";
 import aboutImg from "../assets/backgroundImages/background1.jpg";
 import AnimatedText from "../components/AnimatedText";
 
-export default function About() {
+export default function About({ darkMode }) {
   return (
     <section
       id="about"
-      className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-400 px-6 md:px-20 py-20"
+      className={`min-h-screen flex items-center justify-center px-6 md:px-20 py-20 bg-gradient-to-br ${darkMode ? "from-gray-900 to-gray-800 text-white" : "from-gray-50 to-gray-400 text-gray-900"}`}
     >
       <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-12 items-center">
-        
+
         {/* Text Section */}
         <div className="space-y-6">
           <AnimatedText
             text="About HAGZ"
-            className="text-4xl md:text-5xl font-extrabold leading-snug bg-gradient-to-r from-green-600 to-green-400 bg-clip-text text-transparent"
+            className="text-4xl md:text-5xl font-extrabold leading-snug bg-gradient-to-r from-green-600 to-green-900 bg-clip-text text-transparent"
           />
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.3 }}
             viewport={{ once: true }}
-            className="text-lg text-gray-700 leading-relaxed"
+            className={`text-lg leading-relaxed ${darkMode ? "text-gray-50" : "text-gray-700"}`}
           >
-            <span className="font-semibold">HAGZ</span> is your ultimate football field booking platform — designed to make finding, booking, and playing on your favorite pitch seamless and fun.
+            <span className="font-semibold text-green-600">HAGZ</span> is your ultimate football field booking platform — designed to make finding, booking, and playing on your favorite pitch seamless and fun.
           </motion.p>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.5 }}
             viewport={{ once: true }}
-            className="text-lg text-gray-700 leading-relaxed"
+            className={`text-lg leading-relaxed ${darkMode ? "text-gray-50" : "text-gray-700"}`}
           >
             From casual kickabouts to serious league matches, HAGZ gives you{" "}
             <span className="font-semibold text-green-600">instant access</span> to the best fields near you, with live availability, secure payments, and exclusive offers.
@@ -41,7 +41,7 @@ export default function About() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.7 }}
             viewport={{ once: true }}
-            className="text-lg text-gray-700 leading-relaxed"
+            className={`text-lg leading-relaxed ${darkMode ? "text-gray-50" : "text-gray-700"}`}
           >
             We’re building more than just a booking system —{" "}
             <span className="font-semibold text-green-600">we’re building a community</span>. With team-finding tools, loyalty rewards, ratings, and weather updates, HAGZ is where your football journey begins.

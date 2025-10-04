@@ -53,11 +53,11 @@ const fields = [
   },
 ];
 
-export default function Fields() {
+export default function Fields({ darkMode }) {
   return (
     <section
       id="fields"
-      className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-400 dark:from-gray-900 dark:to-gray-800 px-6 md:px-20 py-20"
+      className={`min-h-screen flex items-center justify-center px-6 md:px-20 py-20 bg-gradient-to-br ${darkMode ? "from-gray-900 dark:to-gray-800" : "from-gray-50 to-gray-400"}`}
     >
       <motion.div
         className="max-w-7xl mx-auto w-full space-y-12"
@@ -68,10 +68,10 @@ export default function Fields() {
       >
         {/* Header */}
         <motion.div className="text-center space-y-6" variants={fadeUp}>
-          <h1 className="text-4xl md:text-5xl font-extrabold bg-gradient-to-r from-green-700 to-green-500 bg-clip-text text-transparent">
+          <h1 className="text-4xl md:text-5xl font-extrabold bg-gradient-to-r from-green-400 to-green-600 bg-clip-text text-transparent">
             Discover Football Fields
           </h1>
-          <p className="text-lg text-gray-700 dark:text-gray-300 max-w-2xl mx-auto">
+          <p className={`text-lg max-w-2xl mx-auto ${darkMode ? "text-gray-300" : "text-gray-950"}`}>
             Find and book the best football pitches around you — easy, fast, and
             hassle-free. Play your game the professional way ⚽
           </p>
@@ -87,7 +87,7 @@ export default function Fields() {
               key={field.id}
               variants={fadeUp}
               whileHover={{ scale: 1.03 }}
-              className="bg-white dark:bg-gray-900 rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition"
+              className={`${darkMode ? "bg-gray-900" : "bg-white"} rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition`}
             >
               {/* Image with overlay */}
               <div className="relative group">
@@ -106,7 +106,7 @@ export default function Fields() {
                 <h3 className="text-2xl font-bold text-green-700">
                   {field.name}
                 </h3>
-                <p className="flex items-center text-gray-600 dark:text-gray-400 gap-2">
+                <p className={`flex items-center gap-2 ${darkMode ? "text-gray-400" : "text-gray-600 "}`}>
                   <MapPin size={18} /> {field.location}
                 </p>
                 <p className="flex items-center text-yellow-500 font-semibold gap-2">

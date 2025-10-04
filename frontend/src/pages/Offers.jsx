@@ -3,7 +3,7 @@ import Button from "../components/Button";
 import { Gift, Percent, Calendar, Star } from "lucide-react";
 import { motion } from "framer-motion";
 
-export default function Offers() {
+export default function Offers({ darkMode }) {
   const navigate = useNavigate();
 
   const offers = [
@@ -34,18 +34,18 @@ export default function Offers() {
   ];
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-400 dark:bg-gray-900 text-gray-900 dark:text-white pt-24 pb-16 px-6 md:px-12">
+    <main className={`min-h-screen pt-24 pb-16 px-6 md:px-12 bg-gradient-to-br ${darkMode ? "from-gray-900 to-gray-800 text-white" : "from-gray-50 to-gray-400 text-gray-900"}`}>
       {/* Hero */}
       <motion.section
         initial={{ opacity: 0, y: -40 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
-        className="text-center max-w-3xl mx-auto mb-16"
+        className="text-center max-w-3xl mx-auto mb-16 "
       >
         <h1 className="text-3xl md:text-5xl font-bold mb-6 text-green-600">
           Exclusive Offers Just for You 🎁
         </h1>
-        <p className="text-lg text-gray-700 dark:text-gray-950">
+        <p className={`text-lg ${darkMode ? "text-gray-50" : "text-gray-950"}`}>
           Discover amazing deals and save while enjoying your favorite games ⚽. We believe football should always be fun, affordable, and rewarding 💚.
         </p>
       </motion.section>
@@ -69,7 +69,7 @@ export default function Offers() {
             <h3 className="text-xl font-bold text-green-700 mb-2">
               {offer.title}
             </h3>
-            <p className="text-gray-700 dark:text-gray-950 text-center">
+            <p className={`${darkMode ? "text-gray-950" : "text-gray-600"} text-center`}>
               {offer.desc}
             </p>
           </motion.div>
@@ -83,7 +83,7 @@ export default function Offers() {
         transition={{ duration: 0.8, delay: 0.5 }}
         className="mt-20 text-center"
       >
-        <h2 className="text-2xl md:text-3xl font-semibold mb-6 text-gray-900 dark:text-gray-950">
+        <h2 className={`text-2xl md:text-3xl font-semibold mb-6 ${darkMode ? "text-gray-50" : "text-gray-950"}`}>
           Don't miss out on these limited-time deals 🔥
         </h2>
         <Button

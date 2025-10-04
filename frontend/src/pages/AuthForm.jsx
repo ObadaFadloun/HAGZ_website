@@ -89,7 +89,7 @@ function AuthForm({ onAuth, initialMode = "login" }) {
                     transition={{ duration: 1, delay: 0.4 }}
                     className="text-lg md:text-xl text-gray-700 dark:text-gray-300 text-center max-w-md leading-relaxed"
                 >
-                    Find, book, and play football with friends anytime, anywhere ⚽
+                    Find, book, and play football with friends anytime, anywhere
                 </motion.p>
 
                 <motion.div
@@ -98,7 +98,7 @@ function AuthForm({ onAuth, initialMode = "login" }) {
                     transition={{ duration: 1, delay: 0.6 }}
                 >
                     <Button
-                        className="mt-10 px-6 py-3 bg-gradient-to-r from-green-600 to-green-800 text-white rounded-xl shadow-md hover:scale-105 hover:shadow-xl transition"
+                        className="mt-10 px-6 py-3 bg-gradient-to-r from-green-600 to-green-800 text-white rounded-xl shadow-md hover:scale-105 hover:shadow-xl transition cursor-pointer"
                         onClick={() => navigate("/homepage")}
                     >
                         ← Back to Homepage
