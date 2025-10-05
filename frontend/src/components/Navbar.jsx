@@ -1,9 +1,9 @@
-// src/components/Navbar.jsx
+import { motion } from "framer-motion";
 import { Sun, Moon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Button from "./Button";
 
-export default function Navbar({darkMode, setDarkMode}) {
+export default function Navbar({ darkMode, setDarkMode }) {
     const navigate = useNavigate();
 
     return (
@@ -65,12 +65,23 @@ export default function Navbar({darkMode, setDarkMode}) {
                     Login
                 </Button>
 
-                <Button
-                    onClick={() => setDarkMode(!darkMode)}
-                    className={`p-2 rounded-full shadow-md transition-all duration-300 text-green-700 cursor-pointer bg-gradient-to-r ${darkMode ? "from-gray-200 to-gray-400" : "from-gray-900 to-gray-700"}`}
+                <motion.div
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.8, delay: 0.3 }}
                 >
-                    {darkMode ? <Sun /> : <Moon />}
-                </Button>
+                    <Button
+                        onClick={() => setDarkMode(!darkMode)}
+                        className={`w-12 h-12 flex items-center justify-center rounded-full shadow-lg 
+                        transition-all duration-500 
+                        ${darkMode
+                                ? "bg-gradient-to-br from-yellow-400 to-orange-500 text-white"
+                                : "bg-gradient-to-br from-gray-800 to-gray-900 text-yellow-300"} 
+                        hover:scale-110 hover:rotate-12`}
+                    >
+                        {darkMode ? <Sun size={22} /> : <Moon size={22} />}
+                    </Button>
+                </motion.div>
             </div>
         </header>
     );

@@ -24,7 +24,7 @@ export default function Contact({ darkMode }) {
                         <input
                             type="text"
                             placeholder="Enter your name"
-                            className={`w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-green-600 outline-none placeholder:text-gray-400 ${darkMode ? "border-gray-700 bg-gray-900 text-gray-50" : "border-gray-300 bg-gray-200 text-gray-950"}`}
+                            className={`w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-green-600 outline-none placeholder:text-gray-400 ${darkMode ? "border-gray-700 bg-gray-900 text-gray-50" : "border-gray-300 bg-gray-50 text-gray-950"}`}
                         />
                     </div>
                     <div>
@@ -32,7 +32,7 @@ export default function Contact({ darkMode }) {
                         <input
                             type="email"
                             placeholder="Enter your email"
-                            className={`w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-green-600 outline-none placeholder:text-gray-400 ${darkMode ? "border-gray-700 bg-gray-900 text-gray-50" : "border-gray-300 bg-gray-200 text-gray-950"}`}
+                            className={`w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-green-600 outline-none placeholder:text-gray-400 ${darkMode ? "border-gray-700 bg-gray-900 text-gray-50" : "border-gray-300 bg-gray-50 text-gray-950"}`}
                         />
                     </div>
                     <div>
@@ -40,7 +40,7 @@ export default function Contact({ darkMode }) {
                         <textarea
                             placeholder="Write your message..."
                             rows="5"
-                            className={`w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-green-600 outline-none placeholder:text-gray-400 ${darkMode ? "border-gray-700 bg-gray-900 text-gray-50" : "border-gray-300 bg-gray-200 text-gray-950 "}`}
+                            className={`w-full px-4 py-3 rounded-lg border focus:ring-2 focus:ring-green-600 outline-none placeholder:text-gray-400 ${darkMode ? "border-gray-700 bg-gray-900 text-gray-50" : "border-gray-300 bg-gray-50 text-gray-950 "}`}
                         />
                     </div>
                     <Button
