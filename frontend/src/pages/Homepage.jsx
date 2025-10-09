@@ -1,5 +1,6 @@
+// src/pages/LandingPage.jsx
 import { useState, useEffect } from "react";
-import { Sun, Moon, Shield, Star, Gift } from "lucide-react";
+import { Shield, Star, Gift, Sun, Moon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import Button from "../components/Button";
 import useEmblaCarousel from "embla-carousel-react";
@@ -14,16 +15,18 @@ export default function LandingPage({ darkMode }) {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [autoplay]);
 
   const images = Object.values(
-    import.meta.glob("../assets/backgroundImages/*.{jpg,png,jpeg,svg}", { eager: true })
+    import.meta.glob("../assets/backgroundImages/*.{jpg,png,jpeg,svg}", {
+      eager: true,
+    })
   ).map((mod) => mod.default);
 
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
-    }, 5000);
-
+    const interval = setInterval(
+      () => setCurrentIndex((i) => (i + 1) % images.length),
+      5000
+    );
     return () => clearInterval(interval);
   }, [images.length]);
 
@@ -32,8 +35,13 @@ export default function LandingPage({ darkMode }) {
 
   return (
     <main>
-      <div className={`min-h-screen bg-gradient-to-br ${darkMode ? "from-gray-900 to-gray-800 text-white" : "from-gray-50 to-gray-400 text-gray-900"}`}>
-
+      <div
+        className={`min-h-screen bg-gradient-to-br ${
+          darkMode
+            ? "from-gray-900 to-gray-800 text-gray-300"
+            : "from-gray-50 to-gray-400 text-gray-900"
+        }`}
+      >
         {/* Hero */}
         <section
           className="relative bg-cover bg-center h-[60vh] md:h-[75vh] flex flex-col justify-center items-center text-center px-4"
@@ -57,13 +65,13 @@ export default function LandingPage({ darkMode }) {
           >
             <Button
               onClick={() => navigate("/auth")}
-              className="px-6 py-3 bg-gradient-to-r from-green-600 to-green-800 text-white rounded-xl hover:bg-green-700 transform transition duration-500 ease-in-out hover:scale-105 hover:shadow-xl"
+              className="px-6 py-3 bg-gradient-to-r from-green-600 to-green-800 text-white rounded-xl shadow-md hover:scale-105 transition"
             >
               Find a Field
             </Button>
             <Button
               onClick={() => navigate("/auth")}
-              className="px-6 py-3 bg-gradient-to-r from-gray-200 to-gray-400 text-gray-900 rounded-xl hover:bg-gray-200 transform transition duration-500 ease-in-out hover:scale-105 hover:shadow-xl"
+              className="px-6 py-3 bg-gradient-to-r from-gray-200 to-gray-400 text-gray-900 rounded-xl shadow-md hover:scale-105 transition"
             >
               Become an Owner
             </Button>
@@ -95,17 +103,24 @@ export default function LandingPage({ darkMode }) {
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: idx * 0.2 }}
+                className={`p-6 rounded-xl shadow ${
+                  darkMode ? "bg-gray-800 text-gray-200" : "bg-gray-200 text-gray-900"
+                }`}
               >
                 <item.icon className="mx-auto mb-3 w-10 h-10 text-green-600" />
                 <h4 className="font-semibold">{item.title}</h4>
-                <p className="text-sm text-gray-600 dark:text-gray-400">{item.desc}</p>
+                <p className="text-sm opacity-80">{item.desc}</p>
               </motion.div>
             ))}
           </div>
         </section>
 
         {/* Popular Fields */}
-        <section className={`py-16 px-6 md:px-12 relative ${darkMode ? "bg-gray-800" : "bg-gray-200"}`}>
+        <section
+          className={`py-16 px-6 md:px-12 relative ${
+            darkMode ? "bg-gray-800" : "bg-gray-200"
+          }`}
+        >
           <motion.h3
             initial={{ opacity: 0, y: -20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -125,7 +140,9 @@ export default function LandingPage({ darkMode }) {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.8, delay: i * 0.15 }}
-                  className="flex-shrink-0 w-full m-2 sm:w-100 bg-gradient-to-r from-gray-700 to-gray-900 dark:bg-gray-700 rounded-xl shadow-lg overflow-hidden transform transition duration-500 ease-in-out hover:scale-105 hover:shadow-xl"
+                  className={`flex-shrink-0 w-full m-2 sm:w-100 rounded-xl shadow-lg overflow-hidden transform transition duration-500 ease-in-out hover:scale-105 hover:shadow-xl ${
+                    darkMode ? "bg-gray-700" : "bg-gray-100"
+                  }`}
                 >
                   <img
                     src={images[(i - 1) % 3]}
@@ -134,7 +151,7 @@ export default function LandingPage({ darkMode }) {
                   />
                   <div className="p-4 flex justify-between items-center">
                     <span className="text-yellow-500 font-semibold">⭐ 4.5</span>
-                    <Button className="px-4 py-2 bg-gradient-to-r from-green-600 to-green-800 text-white rounded-lg hover:bg-green-700 transform transition duration-500 ease-in-out hover:scale-105 hover:shadow-xl">
+                    <Button className="px-4 py-2 bg-gradient-to-r from-green-600 to-green-800 text-white rounded-lg shadow-md hover:scale-105 transition">
                       Book Now
                     </Button>
                   </div>
@@ -146,13 +163,13 @@ export default function LandingPage({ darkMode }) {
           {/* Navigation Arrows */}
           <button
             onClick={scrollPrev}
-            className="absolute top-1/2 left-5 transform -translate-y-1/2 bg-white bg-opacity-50 rounded-full p-3 hover:bg-opacity-80 cursor-pointer"
+            className="absolute top-1/2 left-5 transform -translate-y-1/2 bg-white bg-opacity-50 rounded-full p-3 hover:bg-opacity-80"
           >
             <ChevronLeft size={24} />
           </button>
           <button
             onClick={scrollNext}
-            className="absolute top-1/2 right-5 transform -translate-y-1/2 bg-white bg-opacity-50 rounded-full p-3 hover:bg-opacity-80 cursor-pointer"
+            className="absolute top-1/2 right-5 transform -translate-y-1/2 bg-white bg-opacity-50 rounded-full p-3 hover:bg-opacity-80"
           >
             <ChevronRight size={24} />
           </button>
@@ -169,13 +186,17 @@ export default function LandingPage({ darkMode }) {
           >
             Special Offers
           </motion.h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-black">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ duration: 0.7, delay: 0.2 }}
-              className="p-6 bg-gradient-to-r from-green-400 to-gray-500 rounded-xl text-center"
+              className={`p-6 rounded-xl text-center ${
+                darkMode
+                  ? "bg-gradient-to-r from-green-600 to-gray-700"
+                  : "bg-gradient-to-r from-green-400 to-gray-500"
+              }`}
             >
               <h4 className="text-xl font-bold">PROMO CODE</h4>
               <p className="text-2xl">Get 20% OFF</p>
@@ -185,7 +206,11 @@ export default function LandingPage({ darkMode }) {
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ duration: 0.7, delay: 0.4 }}
-              className="p-6 bg-gradient-to-r from-red-400 to-gray-500 rounded-xl text-center"
+              className={`p-6 rounded-xl text-center ${
+                darkMode
+                  ? "bg-gradient-to-r from-red-600 to-gray-700"
+                  : "bg-gradient-to-r from-red-400 to-gray-500"
+              }`}
             >
               <h4 className="text-xl font-bold">DISCOUNT</h4>
               <p className="text-2xl">15% OFF</p>

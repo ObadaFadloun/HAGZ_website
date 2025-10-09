@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
-import defaultProfile from '../assets/profile-imge.png'
+import defaultProfile from "../assets/profile-imge.png";
 
 import {
     LayoutDashboard,
@@ -11,19 +11,20 @@ import {
     ChevronLeft,
     ChevronRight,
     Gift,
-    ShieldAlert
+    ShieldAlert,
+    Sun,
+    Moon
 } from "lucide-react";
+import Button from "./Button";
 
-export default function Sidebar({ user, onLogout, darkMode }) {
-    const [isOpen, setIsOpen] = useState(true);
-
+export default function Sidebar({ user, onLogout, darkMode, setDarkMode, isOpen, setIsOpen }) {
     const menus = [
-        { name: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
-        { name: "Owner Reqests", icon: ShieldAlert, path: "/dashboard/ownerReqests" },
-        { name: "Bookings", icon: Calendar, path: "/dashboard/bookings" },
-        { name: "Users", icon: Users, path: "/dashboard/users" },
-        { name: "Gift", icon: Gift, path: "/dashboard/gift" },
-        { name: "Settings", icon: Settings, path: "/dashboard/settings" },
+        { name: "Dashboard", icon: LayoutDashboard, path: "/dashboard", role: "all" },
+        { name: "Owner Requests", icon: ShieldAlert, path: "/dashboard/ownerReqests", role: "admin" },
+        { name: "Bookings", icon: Calendar, path: "/dashboard/bookings", role: "all" },
+        { name: "Users", icon: Users, path: "/dashboard/users", role: "admin" },
+        { name: "Gift", icon: Gift, path: "/dashboard/gift", role: "owner" },
+        { name: "Settings", icon: Settings, path: "/settings", role: "all" },
     ];
 
     useEffect(() => {
@@ -32,16 +33,33 @@ export default function Sidebar({ user, onLogout, darkMode }) {
 
     return (
         <div
-            className={`${isOpen ? "w-64" : "w-20"} bg-gray-800 text-white h-screen flex flex-col transition-all duration-300 shadow-xl`}
+            className={`${isOpen ? "w-64" : "w-20"} h-screen flex flex-col transition-all duration-300 shadow-xl border-r border-green-700
+      ${darkMode
+                    ? "bg-gradient-to-b from-gray-900 via-gray-800 to-gray-700"
+                    : "bg-gradient-to-b from-gray-50 via-gray-100 to-gray-200"
+                }`}
         >
             {/* Header */}
-            <div className="flex items-center justify-between px-4 py-3">
-                <button
+            <div className={`px-4 py-3 flex justify-between`}>
+                {isOpen && <Button
+                    onClick={() => setDarkMode(!darkMode)}
+                    className={`p-2 rounded-full shadow-md transition-all duration-300 cursor-pointer
+                        ${darkMode
+                            ? "bg-gradient-to-br from-yellow-400 to-orange-500 text-white"
+                            : "bg-gradient-to-br from-gray-800 to-gray-900 text-yellow-300"} 
+                        hover:scale-110 hover:rotate-12`}
+                >
+                    {darkMode ? <Sun size={22} /> : <Moon size={22} />}
+                </Button>}
+                <Button
                     onClick={() => setIsOpen(!isOpen)}
-                    className="p-2 rounded-full bg-green-700 hover:bg-green-600"
+                    className={`p-2 rounded-full shadow-md transition-colors ${darkMode
+                        ? "bg-green-500 hover:bg-green-400"
+                        : "bg-green-600 hover:bg-green-500 text-white"
+                        }`}
                 >
                     {isOpen ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
-                </button>
+                </Button>
             </div>
 
             {/* Scrollable Menu + Footer */}
@@ -51,42 +69,54 @@ export default function Sidebar({ user, onLogout, darkMode }) {
                     <img
                         src={user.profileImage || defaultProfile}
                         alt="Profile"
-                        className="w-10 h-10 rounded-full"
+                        className="w-14 h-14 rounded-full shadow-lg border-2 border-green-500"
                     />
-                    {isOpen && < h1 className="font-bold text-green-600 mt-2">{user.firstName}</h1>}
+                    {isOpen && (
+                        <h1 className={`font-bold mt-2 ${darkMode ? "text-green-400" : "text-green-700"}`}>
+                            {user.firstName}
+                        </h1>
+                    )}
                 </div>
 
                 {/* Menu */}
-                <nav className="flex-1 mt-6">
-                    {menus.map((menu, index) => (
-                        <NavLink
-                            to={menu.path}
-                            key={index}
-                            className={({ isActive }) =>
-                                `flex items-center gap-4 px-4 py-3 my-2 rounded-lg transition-all duration-200 ${isActive
-                                    ? "bg-white text-green-700 font-semibold"
-                                    : "hover:bg-green-700"
-                                }`
-                            }
-                        >
-                            <menu.icon size={22} />
-                            {isOpen && <span>{menu.name}</span>}
-                        </NavLink>
-                    ))}
+                <nav className="flex-1 space-y-1">
+                    {menus
+                        .filter((menu) => menu.role === user.role || menu.role === "all")
+                        .map((menu, index) => (
+                            <NavLink
+                                to={menu.path}
+                                key={index}
+                                className={({ isActive }) =>
+                                    `flex items-center gap-4 px-4 py-3 mx-2 rounded-lg transition-all duration-200 ${isActive
+                                        ? darkMode
+                                            ? "bg-gray-50 text-green-600 font-semibold"
+                                            : "bg-green-600 text-white font-semibold shadow-md"
+                                        : darkMode
+                                            ? "text-gray-200 hover:bg-green-600 hover:text-white"
+                                            : "text-gray-800 hover:bg-green-200 hover:text-green-800"
+                                    }`
+                                }
+                            >
+                                <menu.icon size={22} />
+                                {isOpen && <span>{menu.name}</span>}
+                            </NavLink>
+                        ))}
                 </nav>
 
                 {/* Footer */}
                 <div className="px-4 py-4 border-t border-green-700">
-                    <button
+                    <Button
                         onClick={onLogout}
-                        className="flex items-center gap-3 px-3 py-2 w-full rounded-lg hover:bg-red-700 transition cursor-pointer"
+                        className={`flex items-center gap-3 px-3 py-2 w-full rounded-lg shadow-md transition ${darkMode
+                            ? "bg-red-600 hover:bg-red-700 text-white"
+                            : "bg-red-500 hover:bg-red-600 text-white"
+                            }`}
                     >
                         <LogOut size={20} />
                         {isOpen && <span>Logout</span>}
-                    </button>
+                    </Button>
                 </div>
             </div>
-        </div >
-
+        </div>
     );
 }
