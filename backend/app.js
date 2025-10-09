@@ -4,24 +4,28 @@ const cors = require('cors');
 const morgan = require('morgan');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
-const mongoSnaitize = require('express-mongo-sanitize');
+const mongoSanitize = require('express-mongo-sanitize');
 const xss = require('xss-clean');
 const hpp = require('hpp');
+const path = require('path');
 
 const AppError = require('./utils/appError');
 const globelErrorHandler = require('./controllers/errorController');
 const userRouter = require('./routes/userRouters');
-const authRouter = require("./routes/authRouters")
+const authRouter = require('./routes/authRouters');
+const ownerRequestRouter = require('./routes/ownerRequestRoutes')
 
 const app = express();
 
 app.use(
   cors({
     origin: 'http://localhost:5173', // your frontend URL
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE',],
     credentials: true
   })
 );
+
+app.use('/img', express.static(path.join(__dirname, 'public/img')));
 
 // 1) Globel middleware
 // Set security HTTP headers
@@ -61,6 +65,7 @@ app.use(express.static(`${__dirname}/public`));
 
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/users', userRouter);
+app.use('/api/v1/ownerRequests', ownerRequestRouter);
 
 app.use((req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
