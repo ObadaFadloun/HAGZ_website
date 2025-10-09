@@ -23,11 +23,24 @@ const userSchema = new mongoose.Schema(
       lowercase: true,
       validate: [validator.isEmail, 'Please provide a valid email']
     },
+    role: {
+      type: String,
+      enum: ['admin', 'owner', 'player'],
+      default: 'player'
+    },
+    profileImage: {
+      type: String
+    },
+    ownerRequestStatus: {
+      type: String,
+      enum: ['none', 'pending', 'approved', 'rejected'],
+      default: 'none'
+    },
     password: {
       type: String,
       required: [true, 'Password is required'],
-      minLength: [8, 'Password must be 8 characters at least'],
-      maxLength: [20, 'Password must be 20 characters at most'],
+      minlength: [8, 'Password must be 8 characters at least'],
+      maxlength: [20, 'Password must be 20 characters at most'],
       select: false
     },
     confirmPassword: {
@@ -44,14 +57,6 @@ const userSchema = new mongoose.Schema(
     passwordChangedAt: Date,
     passwordResetToken: String,
     passwordResetExpires: Date,
-    role: {
-      type: String,
-      enum: ['admin', 'owner', 'player'],
-      default: 'player'
-    },
-    profileImage: {
-      type: String
-    },
     createdAt: {
       type: Date,
       default: Date.now(),
@@ -82,11 +87,11 @@ userSchema.pre(/^find/, function (next) {
 });
 
 userSchema.methods.checkPassword = async function (
-  candidatePassworn,
+  candidatePassword,
   userPassword
 ) {
   // Singular "checkPassword"
-  return await bcrypt.compare(candidatePassworn, userPassword);
+  return await bcrypt.compare(candidatePassword, userPassword);
 };
 
 userSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
@@ -116,6 +121,6 @@ userSchema.methods.createPasswordResetToken = function () {
   return resetToken;
 };
 
-const User = mongoose.model('user', userSchema);
+const User = mongoose.model('User', userSchema);
 
 module.exports = User;
