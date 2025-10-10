@@ -6,13 +6,38 @@ const express = require('express');
 const router = express.Router();
 
 router.patch('/updateMe', authController.protect, userController.updateMe);
+
+router.patch(
+  '/updateProfilePicture',
+  authController.protect,
+  userController.uploadUserPhoto, // multer middleware
+  userController.resizeUserPhoto, // process/resize image
+  userController.updateProfilePicture // update in DB
+);
+
+router.patch(
+  '/updateMyPassword',
+  authController.protect,
+  authController.updatePassword
+);
+
+router.post(
+  '/requestOwner',
+  authController.protect,
+  userController.requestOwner
+);
+
 router.delete('/deleteMe', authController.protect, userController.deleteMe);
+
+// router.route('/').get(authController.protect, authController.restrictTo('admin'), userController.getAllUsers);
+router.route('/').get(userController.getAllUsers);
+
+module.exports = router;
 
 // router.post('/logout', userController.logout);
 
 // User Profile & Actions (Protected - requires authentication);
 // router.get('/profile', authUser, userController.getUserProfile);
-// router.put('/profile', authUser, userController.updateUserProfile);
 
 // User's Booking History (Protected)
 // router.get('/my-bookings', authUser, userController.getMyBookings);
@@ -31,15 +56,3 @@ router.delete('/deleteMe', authController.protect, userController.deleteMe);
 // router.get('/inbox', authUser, userController.getMyMessages);
 // router.post('/inbox/send', authUser, userController.sendMessage);
 // router.get('/inbox/:conversationId', authUser, userController.getConversation);
-
-// Route to request becoming an Owner (Protected)
-// router.post('/request-owner', authUser, userController.requestOwnerStatus);
-
-router.route('/').get(userController.getAllUsers);
-// router
-//   .route('/:id')
-//   .get(userController.getUser)
-//   .patch(userController.updateMe)
-//   .delete(userController.deleteMe);
-
-module.exports = router;

@@ -59,7 +59,7 @@ export default function Settings({ user, setUser, onLogout, darkMode, setDarkMod
           {user.role === "player" && <BecomeOwnerSection user={user} setUser={setUser} darkMode={darkMode} />}
 
           {/* Danger Zone */}
-          <DeleteAccountSection user={user} setUser={setUser} darkMode={darkMode} />
+          {user.role !== "admin" && <DeleteAccountSection user={user} setUser={setUser} darkMode={darkMode} />}
         </div>
       </div>
     </div>
