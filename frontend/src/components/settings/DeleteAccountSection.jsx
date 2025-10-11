@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, ChevronUp, Trash2 } from "lucide-react";
 import api from "../../utils/api";
+import Button from "../Button";
 
 export default function DeleteAccountSection({ user, setUser, darkMode }) {
   const [dangerZoneOpen, setDangerZoneOpen] = useState(false);
@@ -15,9 +16,8 @@ export default function DeleteAccountSection({ user, setUser, darkMode }) {
 
     try {
       setLoading(true);
-      const res = await api.delete("/users/deleteMe");
+      const res = await api.delete("/users/delete-me");
 
-      console.log(res.status)
       if (res.status === 204) {
         alert("Your account has been deleted successfully.");
         localStorage.removeItem("token");
@@ -42,13 +42,13 @@ export default function DeleteAccountSection({ user, setUser, darkMode }) {
         : "bg-red-100 border-red-300 text-red-600"
         }`}
     >
-      <button
+      <Button
         onClick={() => setDangerZoneOpen(!dangerZoneOpen)}
-        className="flex justify-between items-center w-full text-left text-xl font-semibold mb-2"
+        className="cursor-pointer flex justify-between items-center w-full text-left text-xl font-semibold mb-2"
       >
         Delete Account
         {dangerZoneOpen ? <ChevronUp /> : <ChevronDown />}
-      </button>
+      </Button>
 
       <AnimatePresence>
         {dangerZoneOpen && (
@@ -63,7 +63,7 @@ export default function DeleteAccountSection({ user, setUser, darkMode }) {
               Deleting your account is permanent and cannot be undone.
             </p>
 
-            <button
+            <Button
               onClick={handleDelete}
               disabled={loading}
               className={`flex items-center justify-center gap-2 text-white px-4 py-2 rounded-lg transition 
@@ -74,7 +74,7 @@ export default function DeleteAccountSection({ user, setUser, darkMode }) {
             >
               <Trash2 size={18} />
               {loading ? "Deleting..." : "Delete Account"}
-            </button>
+            </Button>
           </motion.div>
         )}
       </AnimatePresence>

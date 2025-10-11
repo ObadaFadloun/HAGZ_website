@@ -31,7 +31,7 @@ export default function UploadProfileSection({ user, setUser, darkMode }) {
         try {
             setIsUploading(true);
 
-            const res = await api.patch("/users/updateProfilePicture", formData, {
+            const res = await api.patch("/users/update-profile-picture", formData, {
                 headers: { "Content-Type": "multipart/form-data" },
             });
 

@@ -21,7 +21,7 @@ export default function EditProfileSection({ user, setUser, darkMode }) {
         }
 
         try {
-            const res = await api.patch("/users/updateMe", {
+            const res = await api.patch("/users/update-me", {
                 firstName: profile.firstName,
                 lastName: profile.lastName,
                 email: profile.email,

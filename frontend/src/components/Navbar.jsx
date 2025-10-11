@@ -72,7 +72,7 @@ export default function Navbar({ darkMode, setDarkMode }) {
                 >
                     <Button
                         onClick={() => setDarkMode(!darkMode)}
-                        className={`w-12 h-12 flex items-center justify-center rounded-full shadow-lg 
+                        className={`cursor-pointer w-12 h-12 flex items-center justify-center rounded-full shadow-lg 
                         transition-all duration-500 
                         ${darkMode
                                 ? "bg-gradient-to-br from-yellow-400 to-orange-500 text-white"

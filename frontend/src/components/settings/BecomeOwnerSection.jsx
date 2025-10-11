@@ -14,7 +14,7 @@ export default function BecomeOwnerSection({ user, setUser, darkMode }) {
 
     try {
       setLoading(true);
-      const res = await api.post("/users/requestOwner");
+      const res = await api.post("/owner-requests/become-owner");
 
       if (res.data.status === "success") {
         alert("Your request to become an owner has been sent!");
