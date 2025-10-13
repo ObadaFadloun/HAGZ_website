@@ -94,21 +94,6 @@ exports.updateMe = catchAsync(async (req, res, next) => {
   });
 });
 
-// 🧩 5. Request user to be an Owner
-exports.requestOwner = catchAsync(async (req, res, next) => {
-  const user = await User.findByIdAndUpdate(
-    req.user.id,
-    { ownerRequestStatus: 'pending' },
-    { new: true, runValidators: true }
-  );
-
-  res.status(200).json({
-    status: 'success',
-    message: 'Owner request sent successfully!',
-    user
-  });
-});
-
 exports.getAllUsers = catchAsync(async (req, res, next) => {
   const users = await User.find();
   if (!users) {
