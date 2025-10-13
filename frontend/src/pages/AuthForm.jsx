@@ -44,7 +44,7 @@ function AuthForm({ onAuth, initialMode = "login", darkMode, setDarkMode }) {
             // Forgot password mode
             if (forgotPasswordMode) {
                 try {
-                    await api.post("/auth/forgotPassword", { email: form.email });
+                    await api.post("/auth/forgot-password", { email: form.email });
                     setSuccess("✅ Password reset link sent to your email. Please check your inbox.");
 
                     // Navigate to Reset Password form after 2 seconds
@@ -297,13 +297,13 @@ function AuthForm({ onAuth, initialMode = "login", darkMode, setDarkMode }) {
                             transition={{ duration: 0.4 }}
                             className="mt-4 text-center text-sm"
                         >
-                            <button
+                            <Button
                                 onClick={() => setForgotPasswordMode(true)}
                                 className={`underline font-medium hover:text-green-800 cursor-pointer ${darkMode ? "text-green-400" : "text-green-700"
                                     }`}
                             >
                                 Forgot password?
-                            </button>
+                            </Button>
                         </motion.p>
                     )}
 
@@ -316,13 +316,13 @@ function AuthForm({ onAuth, initialMode = "login", darkMode, setDarkMode }) {
                             transition={{ duration: 0.4 }}
                             className="mt-4 text-center text-sm"
                         >
-                            <button
+                            <Button
                                 onClick={() => setForgotPasswordMode(false)}
                                 className={`underline font-medium hover:text-green-800 cursor-pointer ${darkMode ? "text-green-400" : "text-green-700"
                                     }`}
                             >
                                 ← Back to login
-                            </button>
+                            </Button>
                         </motion.p>
                     )}
 

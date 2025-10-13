@@ -31,7 +31,7 @@ export default function ResetPasswordForm({ darkMode, setDarkMode }) {
 
         try {
             setLoading(true);
-            await api.patch(`/auth/resetPassword/${token}`, form);
+            await api.patch(`/auth/reset-password/${token}`, form);
             setSuccess(true);
             setError("");
             setTimeout(() => navigate("/auth"), 2000);
