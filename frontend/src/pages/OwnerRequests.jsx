@@ -14,10 +14,12 @@ import api from "../utils/api";
 export default function OwnerRequests({ darkMode, setDarkMode }) {
     const [requests, setRequests] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [currentPage, setCurrentPage] = useState(1);
     const navigate = useNavigate();
     const location = useLocation();
     const queryParams = new URLSearchParams(location.search);
     const type = queryParams.get("type") || "new";
+    const requestsPerPage = 5; 
 
     // Fetch all requests on page load
     useEffect(() => {
@@ -42,6 +44,17 @@ export default function OwnerRequests({ darkMode, setDarkMode }) {
         } catch (err) {
             console.error("Error updating request:", err);
         }
+    };
+
+
+    // Pagination logic
+    const totalPages = Math.ceil(requests.length / requestsPerPage);
+    const indexOfLast = currentPage * requestsPerPage;
+    const indexOfFirst = indexOfLast - requestsPerPage;
+    const currentRequests = requests.slice(indexOfFirst, indexOfLast);
+    const handlePageChange = (page) => {
+        if (page < 1 || page > totalPages) return;
+        setCurrentPage(page);
     };
 
     if (loading) {
@@ -111,7 +124,7 @@ export default function OwnerRequests({ darkMode, setDarkMode }) {
             </motion.h1>
 
             {/* Requests List */}
-            {requests.length === 0 ? (
+            {currentRequests.length === 0 ? (
                 <motion.div
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -167,7 +180,7 @@ export default function OwnerRequests({ darkMode, setDarkMode }) {
                     animate={{ opacity: 1 }}
                     transition={{ delay: 0.2 }}
                 >
-                    {requests.map((req, i) => (
+                    {currentRequests.map((req, i) => (
                         <motion.div
                             key={req._id}
                             initial={{ opacity: 0, y: 15 }}
@@ -219,6 +232,14 @@ export default function OwnerRequests({ darkMode, setDarkMode }) {
                             </div>
                         </motion.div>
                     ))}
+                    {/* Centered Pagination */}
+                    <motion.div className="fixed bottom-6 left-1/2 transform -translate-x-1/2">
+                        <Pagination
+                            currentPage={currentPage}
+                            totalPages={totalPages}
+                            onPageChange={handlePageChange}
+                        />
+                    </motion.div>
                 </motion.div>
             )}
         </motion.div>
