@@ -106,6 +106,19 @@ export default function FootballFieldsPage({ user, darkMode, setDarkMode }) {
         }, 100);
     };
 
+    const handleDeleteField = async (id) => {
+        if (!window.confirm("🗑️ Are you sure you want to delete this field?")) return;
+
+        try {
+            await api.delete(`/football-fields/${id}`);
+            setFields((prev) => prev.filter((field) => field._id !== id));
+        } catch (err) {
+            console.error("❌ Failed to delete field:", err);
+            alert("Failed to delete the field. Please try again.");
+        }
+    };
+
+
     if (loading)
         return (
             <div className={`flex justify-center items-center min-h-[100vh] ${darkMode ? "bg-gray-900 text-gray-100" : "bg-gray-50 text-gray-800"}`}>
@@ -177,7 +190,12 @@ export default function FootballFieldsPage({ user, darkMode, setDarkMode }) {
             ) : (
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
                     {currentFields.map((field, i) => (
-                        <FieldCard key={field._id || i} user={user} field={field} darkMode={darkMode} onEdit={handleEditField} />
+                        <FieldCard
+                            key={field._id || i} user={user}
+                            field={field}
+                            darkMode={darkMode}
+                            onEdit={handleEditField}
+                            onDelete={handleDeleteField} />
                     ))}
                 </motion.div>
             )}
@@ -187,7 +205,13 @@ export default function FootballFieldsPage({ user, darkMode, setDarkMode }) {
             </div>
 
             <Modal show={showModal} setShowModal={setShowModal} darkMode={darkMode}>
-                <FieldForm onAdded={handleAddField} onUpdated={handleUpdateField} editField={editField} darkMode={darkMode} user={user} setShowModal={setShowModal}  />
+                <FieldForm
+                    onAdded={handleAddField}
+                    onUpdated={handleUpdateField}
+                    editField={editField}
+                    darkMode={darkMode}
+                    user={user}
+                    setShowModal={setShowModal} />
             </Modal>
         </main>
     );
