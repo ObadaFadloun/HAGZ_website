@@ -89,13 +89,12 @@ function AuthForm({ onAuth, initialMode = "login", darkMode, setDarkMode }) {
             >
                 <Button
                     onClick={() => setDarkMode(!darkMode)}
-                    className={`w-12 h-12 flex items-center justify-center rounded-full shadow-lg 
-        transition-all duration-500 
+                    className={`w-12 h-12 flex items-center justify-center rounded-full shadow-lg
         ${darkMode
                             ? "bg-gradient-to-br from-yellow-400 to-orange-500 text-white"
                             : "bg-gradient-to-br from-gray-800 to-gray-900 text-yellow-300"
                         } 
-        hover:scale-110 hover:rotate-12`}
+        hover:rotate-20`}
                 >
                     {darkMode ? <Sun size={22} /> : <Moon size={22} />}
                 </Button>
@@ -119,7 +118,7 @@ function AuthForm({ onAuth, initialMode = "login", darkMode, setDarkMode }) {
                 </p>
 
                 <Button
-                    className="mt-10 px-6 py-3 bg-gradient-to-r from-green-600 to-green-800 text-white rounded-xl shadow-md hover:scale-105 hover:shadow-xl transition cursor-pointer"
+                    className="mt-10 px-6 bg-gradient-to-r from-green-600 to-green-800 text-white rounded-xl shadow-md"
                     onClick={() => navigate("/homepage")}
                 >
                     ← Back to Homepage
@@ -270,9 +269,9 @@ function AuthForm({ onAuth, initialMode = "login", darkMode, setDarkMode }) {
                         {/* Submit Button */}
                         <Button
                             disabled={loading}
-                            className={`w-full py-3 px-4 rounded-xl shadow-md text-white transition cursor-pointer ${loading
+                            className={`w-full rounded-xl shadow-md text-white ${loading
                                 ? "bg-gray-500 cursor-not-allowed"
-                                : "bg-gradient-to-r from-green-600 to-green-800 hover:scale-105"
+                                : "bg-gradient-to-r from-green-600 to-green-800"
                                 }`}
                         >
                             {loading
@@ -299,7 +298,7 @@ function AuthForm({ onAuth, initialMode = "login", darkMode, setDarkMode }) {
                         >
                             <Button
                                 onClick={() => setForgotPasswordMode(true)}
-                                className={`underline font-medium hover:text-green-800 cursor-pointer ${darkMode ? "text-green-400" : "text-green-700"
+                                className={`underline font-medium ${darkMode ? "text-green-400 hover:text-green-300" : "text-green-700 hover:text-green-800"
                                     }`}
                             >
                                 Forgot password?
@@ -318,7 +317,7 @@ function AuthForm({ onAuth, initialMode = "login", darkMode, setDarkMode }) {
                         >
                             <Button
                                 onClick={() => setForgotPasswordMode(false)}
-                                className={`underline font-medium hover:text-green-800 cursor-pointer ${darkMode ? "text-green-400" : "text-green-700"
+                                className={`underline font-medium ${darkMode ? "text-green-400 hover:text-green-300" : "text-green-700 hover:text-green-800"
                                     }`}
                             >
                                 ← Back to login
@@ -336,13 +335,13 @@ function AuthForm({ onAuth, initialMode = "login", darkMode, setDarkMode }) {
                             className="mt-4 text-center text-sm"
                         >
                             {isSignUp ? "Already have an account?" : "Need an account?"}{" "}
-                            <button
+                            <Button
                                 onClick={toggleForm}
-                                className={`underline font-medium hover:text-green-800 cursor-pointer ${darkMode ? "text-green-400" : "text-green-700"
+                                className={`underline font-medium ${darkMode ? "text-green-400 hover:text-green-300" : "text-green-700 hover:text-green-800"
                                     }`}
                             >
                                 {isSignUp ? "Log In" : "Sign Up"}
-                            </button>
+                            </Button>
                         </motion.p>
                     )}
                 </AnimatePresence>

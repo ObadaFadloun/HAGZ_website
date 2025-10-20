@@ -12,6 +12,9 @@ import {
     ChevronRight,
     Gift,
     ShieldAlert,
+    ShieldUser,
+    Volleyball,
+    VolleyballIcon,
     Sun,
     Moon
 } from "lucide-react";
@@ -19,12 +22,14 @@ import Button from "./Button";
 
 export default function Sidebar({ user, onLogout, darkMode, setDarkMode, isOpen, setIsOpen }) {
     const menus = [
-        { name: "Dashboard", icon: LayoutDashboard, path: "/dashboard", role: "all" },
-        { name: "Owner Requests", icon: ShieldAlert, path: "/dashboard/ownerReqests", role: "admin" },
-        { name: "Bookings", icon: Calendar, path: "/dashboard/bookings", role: "all" },
-        { name: "Users", icon: Users, path: "/dashboard/users", role: "admin" },
+        { name: "Dashboard", icon: LayoutDashboard, path: "/dashboard", role: ["admin", "owner", "player"] },
+        { name: "Owner Requests", icon: ShieldAlert, path: "/owner-requests?type=new", role: "admin" },
+        { name: "Previous Requests", icon: ShieldUser, path: "/owner-requests?type=previous", role: "admin" },
+        { name: "Users", icon: Users, path: "/users", role: "admin" },
+        { name: "Football Fields", icon: Volleyball, path: "/football-fields", role: ["admin", "owner", "player"] },
+        { name: "Bookings", icon: Calendar, path: "/dashboard/bookings", role: ["admin", "owner", "player"] },
         { name: "Gift", icon: Gift, path: "/dashboard/gift", role: "owner" },
-        { name: "Settings", icon: Settings, path: "/settings", role: "all" },
+        { name: "Settings", icon: Settings, path: "/settings", role: ["admin", "owner", "player"] },
     ];
 
     useEffect(() => {
@@ -34,7 +39,7 @@ export default function Sidebar({ user, onLogout, darkMode, setDarkMode, isOpen,
     return (
         <div
             className={`${isOpen ? "w-64" : "w-20"} h-screen flex flex-col transition-all duration-300 shadow-xl border-r border-green-700
-      ${darkMode
+    ${darkMode
                     ? "bg-gradient-to-b from-gray-900 via-gray-800 to-gray-700"
                     : "bg-gradient-to-b from-gray-50 via-gray-100 to-gray-200"
                 }`}
@@ -43,19 +48,19 @@ export default function Sidebar({ user, onLogout, darkMode, setDarkMode, isOpen,
             <div className={`px-4 py-3 flex justify-between`}>
                 {isOpen && <Button
                     onClick={() => setDarkMode(!darkMode)}
-                    className={`p-2 rounded-full shadow-md transition-all duration-300 cursor-pointer
+                    className={`rounded-full shadow-md transition-all
                         ${darkMode
                             ? "bg-gradient-to-br from-yellow-400 to-orange-500 text-white"
                             : "bg-gradient-to-br from-gray-800 to-gray-900 text-yellow-300"} 
-                        hover:scale-110 hover:rotate-12`}
+                    hover:rotate-12`}
                 >
                     {darkMode ? <Sun size={22} /> : <Moon size={22} />}
                 </Button>}
                 <Button
                     onClick={() => setIsOpen(!isOpen)}
-                    className={`p-2 rounded-full shadow-md transition-colors ${darkMode
+                    className={`rounded-full shadow-md transition-colors text-white ${darkMode
                         ? "bg-green-500 hover:bg-green-400"
-                        : "bg-green-600 hover:bg-green-500 text-white"
+                        : "bg-green-600 hover:bg-green-500"
                         }`}
                 >
                     {isOpen ? <ChevronLeft size={20} /> : <ChevronRight size={20} />}
@@ -81,7 +86,12 @@ export default function Sidebar({ user, onLogout, darkMode, setDarkMode, isOpen,
                 {/* Menu */}
                 <nav className="flex-1 space-y-1">
                     {menus
-                        .filter((menu) => menu.role === user.role || menu.role === "all")
+                        .filter((menu) => {
+                            if (Array.isArray(menu.role)) {
+                                return menu.role.includes(user.role);
+                            }
+                            return menu.role === user.role;
+                        })
                         .map((menu, index) => (
                             <NavLink
                                 to={menu.path}
@@ -93,7 +103,7 @@ export default function Sidebar({ user, onLogout, darkMode, setDarkMode, isOpen,
                                             : "bg-green-600 text-white font-semibold shadow-md"
                                         : darkMode
                                             ? "text-gray-200 hover:bg-green-600 hover:text-white"
-                                            : "text-gray-800 hover:bg-green-200 hover:text-green-800"
+                                            : "text-gray-800 hover:bg-gray-300 hover:text-gray-800"
                                     }`
                                 }
                             >
@@ -107,10 +117,7 @@ export default function Sidebar({ user, onLogout, darkMode, setDarkMode, isOpen,
                 <div className="px-4 py-4 border-t border-green-700">
                     <Button
                         onClick={onLogout}
-                        className={`flex items-center gap-3 px-3 py-2 w-full rounded-lg shadow-md transition ${darkMode
-                            ? "bg-red-600 hover:bg-red-700 text-white"
-                            : "bg-red-500 hover:bg-red-600 text-white"
-                            }`}
+                        className={`flex items-center gap-3 w-full rounded-lg shadow-md bg-red-600 hover:bg-red-700 text-white`}
                     >
                         <LogOut size={20} />
                         {isOpen && <span>Logout</span>}

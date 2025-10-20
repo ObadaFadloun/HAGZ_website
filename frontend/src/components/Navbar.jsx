@@ -20,37 +20,31 @@ export default function Navbar({ darkMode, setDarkMode }) {
             <nav className="hidden md:flex space-x-6">
                 <Button
                     onClick={() => navigate("/homepage")}
-                    className="hover:bg-green-700 px-3 py-2 rounded-md transition-all duration-300 font-semibold cursor-pointer"
                 >
                     Home
                 </Button>
                 <Button
                     onClick={() => navigate("/fields")}
-                    className="hover:bg-green-700 px-3 py-2 rounded-md transition-all duration-300 font-semibold cursor-pointer"
                 >
                     Fields
                 </Button>
                 <Button
                     onClick={() => navigate("/teams")}
-                    className="hover:bg-green-700 px-3 py-2 rounded-md transition-all duration-300 font-semibold cursor-pointer"
                 >
                     Teams
                 </Button>
                 <Button
                     onClick={() => navigate("/offers")}
-                    className="hover:bg-green-700 px-3 py-2 rounded-md transition-all duration-300 font-semibold cursor-pointer"
                 >
                     Offers
                 </Button>
                 <Button
                     onClick={() => navigate("/about")}
-                    className="hover:bg-green-700 px-3 py-2 rounded-md transition-all duration-300 font-semibold cursor-pointer"
                 >
                     About
                 </Button>
                 <Button
                     onClick={() => navigate("/contact")}
-                    className="hover:bg-green-700 px-3 py-2 rounded-md transition-all duration-300 font-semibold cursor-pointer"
                 >
                     Contact
                 </Button>
@@ -60,7 +54,7 @@ export default function Navbar({ darkMode, setDarkMode }) {
             <div className="flex items-center space-x-3">
                 <Button
                     onClick={() => navigate("/auth")}
-                    className="px-4 py-2 rounded-lg bg-gradient-to-r from-gray-200 to-gray-400 text-green-700 font-bold shadow-md hover:bg-gray-100 cursor-pointer transform transition duration-500 ease-in-out hover:scale-105 hover:shadow-xl"
+                    className="w-20 rounded-lg text-green-700 bg-gradient-to-r from-gray-200 to-gray-400"
                 >
                     Login
                 </Button>
@@ -72,8 +66,7 @@ export default function Navbar({ darkMode, setDarkMode }) {
                 >
                     <Button
                         onClick={() => setDarkMode(!darkMode)}
-                        className={`cursor-pointer w-12 h-12 flex items-center justify-center rounded-full shadow-lg 
-                        transition-all duration-500 
+                        className={`w-12 h-12 flex items-center justify-center rounded-full shadow-lg 
                         ${darkMode
                                 ? "bg-gradient-to-br from-yellow-400 to-orange-500 text-white"
                                 : "bg-gradient-to-br from-gray-800 to-gray-900 text-yellow-300"} 

@@ -65,13 +65,13 @@ export default function LandingPage({ darkMode }) {
           >
             <Button
               onClick={() => navigate("/auth")}
-              className="px-6 py-3 bg-gradient-to-r from-green-600 to-green-800 text-white rounded-xl shadow-md hover:scale-105 transition"
+              className="px-6 bg-gradient-to-r from-green-600 to-green-800 text-white rounded-md shadow-md"
             >
               Find a Field
             </Button>
             <Button
               onClick={() => navigate("/auth")}
-              className="px-6 py-3 bg-gradient-to-r from-gray-200 to-gray-400 text-gray-900 rounded-xl shadow-md hover:scale-105 transition"
+              className="px-6 bg-gradient-to-r from-gray-200 to-gray-400 text-green-700 rounded-md shadow-md"
             >
               Become an Owner
             </Button>
@@ -161,18 +161,18 @@ export default function LandingPage({ darkMode }) {
           </div>
 
           {/* Navigation Arrows */}
-          <button
+          <Button
             onClick={scrollPrev}
-            className="absolute top-1/2 left-5 transform -translate-y-1/2 bg-white bg-opacity-50 rounded-full p-3 hover:bg-opacity-80"
+            className="absolute top-1/2 left-5 -translate-y-1/2 bg-green-600 text-white bg-opacity-50 rounded-full hover:bg-opacity-80"
           >
             <ChevronLeft size={24} />
-          </button>
-          <button
+          </Button>
+          <Button
             onClick={scrollNext}
-            className="absolute top-1/2 right-5 transform -translate-y-1/2 bg-white bg-opacity-50 rounded-full p-3 hover:bg-opacity-80"
+            className="absolute top-1/2 right-5 -translate-y-1/2 bg-green-600 text-white bg-opacity-50 rounded-full p-3 hover:bg-opacity-80"
           >
             <ChevronRight size={24} />
-          </button>
+          </Button>
         </section>
 
         {/* Special Offers */}

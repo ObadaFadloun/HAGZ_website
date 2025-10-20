@@ -1,7 +1,5 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Sun, Moon } from "lucide-react";
-import Button from "../components/Button";
 import Sidebar from "../components/Sidebar";
 
 export default function AdminDashboard({ user, onLogout, darkMode, setDarkMode }) {

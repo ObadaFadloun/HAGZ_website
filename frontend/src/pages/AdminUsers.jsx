@@ -68,10 +68,7 @@ export default function AdminUsers({ darkMode, setDarkMode }) {
             >
                 <Button
                     onClick={() => navigate("/dashboard")}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-full shadow-md font-semibold transition-all duration-300 cursor-pointer ${darkMode
-                            ? "bg-green-600 hover:bg-green-500 text-white"
-                            : "bg-green-500 hover:bg-green-600 text-white"
-                        }`}
+                    className={`flex items-center gap-2 px-4 rounded-full shadow-md bg-gradient-to-r from-green-600 to-green-700 text-white`}
                 >
                     <ArrowLeft size={18} />
                     Back to Dashboard
@@ -79,9 +76,9 @@ export default function AdminUsers({ darkMode, setDarkMode }) {
 
                 <Button
                     onClick={() => setDarkMode(!darkMode)}
-                    className={`p-2 rounded-full shadow-md transition-all duration-300 cursor-pointer ${darkMode
-                            ? "bg-gradient-to-br from-yellow-400 to-orange-500 text-white"
-                            : "bg-gradient-to-br from-gray-800 to-gray-900 text-yellow-300"
+                    className={`rounded-full shadow-md transition-all ${darkMode
+                        ? "bg-gradient-to-br from-yellow-400 to-orange-500 text-white"
+                        : "bg-gradient-to-br from-gray-800 to-gray-900 text-yellow-300"
                         }`}
                 >
                     {darkMode ? <Sun size={22} /> : <Moon size={22} />}
@@ -106,7 +103,7 @@ export default function AdminUsers({ darkMode, setDarkMode }) {
                     <Lottie animationData={noUsers} loop className="w-48 h-48" />
                     <p className="text-lg font-bold opacity-70">No users found yet.</p>
                     <Button
-                        className="mt-6 text-white bg-gradient-to-r from-green-600 to-green-800 font-bold py-3 px-6 rounded hover:scale-105 hover:shadow-xl transition-all duration-300 cursor-pointer"
+                        className="mt-6 text-white bg-gradient-to-r from-green-600 to-green-800 font-bold hover:shadow-xl"
                         onClick={() => window.location.reload()}
                     >
                         Refresh Page
@@ -127,8 +124,8 @@ export default function AdminUsers({ darkMode, setDarkMode }) {
                             <thead>
                                 <tr
                                     className={`text-left text-sm uppercase ${darkMode
-                                            ? "bg-gray-700 text-green-400"
-                                            : "bg-gray-200 text-green-600"
+                                        ? "bg-gray-700 text-green-400"
+                                        : "bg-gray-200 text-green-600"
                                         }`}
                                 >
                                     <th className="p-4">#</th>
@@ -146,8 +143,8 @@ export default function AdminUsers({ darkMode, setDarkMode }) {
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ delay: i * 0.05 }}
                                         className={`border-b ${darkMode
-                                                ? "border-gray-700 hover:bg-gray-600"
-                                                : "border-gray-200 hover:bg-gray-100"
+                                            ? "border-gray-700 hover:bg-gray-600"
+                                            : "border-gray-200 hover:bg-gray-100"
                                             }`}
                                     >
                                         <td className="p-4 font-semibold">{indexOfFirst + i + 1}</td>
@@ -155,12 +152,12 @@ export default function AdminUsers({ darkMode, setDarkMode }) {
                                         <td className="p-4">{user.email}</td>
                                         <td
                                             className={`p-4 capitalize font-bold ${user.role === "owner"
-                                                    ? darkMode
-                                                        ? "text-yellow-400"
-                                                        : "text-yellow-600"
-                                                    : darkMode
-                                                        ? "text-green-400"
-                                                        : "text-green-600"
+                                                ? darkMode
+                                                    ? "text-yellow-400"
+                                                    : "text-yellow-600"
+                                                : darkMode
+                                                    ? "text-green-400"
+                                                    : "text-green-600"
                                                 }`}
                                         >
                                             {user.role}

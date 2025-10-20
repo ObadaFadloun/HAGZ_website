@@ -4,11 +4,11 @@ import { motion, AnimatePresence } from "framer-motion";
 
 import Sidebar from "../components/Sidebar";
 
-import EditProfileSection from "../components/settings/EditProfileSection";
-import UploadProfileSection from "../components/settings/UploadProfileSection";
-import ChangePasswordSection from "../components/settings/ChangePasswordSection";
-import BecomeOwnerSection from "../components/settings/BecomeOwnerSection";
-import DeleteAccountSection from "../components/settings/DeleteAccountSection";
+import EditProfileSection from "./settings/EditProfileSection";
+import UploadProfileSection from "./settings/UploadProfileSection";
+import ChangePasswordSection from "./settings/ChangePasswordSection";
+import BecomeOwnerSection from "./settings/BecomeOwnerSection";
+import DeleteAccountSection from "./settings/DeleteAccountSection";
 
 export default function Settings({ user, setUser, onLogout, darkMode, setDarkMode }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
