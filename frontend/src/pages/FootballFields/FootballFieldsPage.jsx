@@ -1,0 +1,194 @@
+import { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import { PlusCircle, MapPin, Sun, Moon, ArrowLeft } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import Lottie from "lottie-react";
+
+import api from "../../utils/api";
+import loadingLottie from "../../assets/loading.json";
+import emptyLottie from "../../assets/EmptyState.json";
+
+import Button from "../../components/Button";
+import Pagination from "../../components/Pagination";
+import Modal from "../../components/Modal";
+import FieldForm from "./FieldForm";
+import FieldCard from "./components/FieldCard";
+import SearchAndFilterBar from "./components/SearchAndFilterBar";
+
+export default function FootballFieldsPage({ user, darkMode, setDarkMode }) {
+    const navigate = useNavigate();
+
+    const [fields, setFields] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [filters, setFilters] = useState({
+        nightLights: false,
+        bathrooms: false,
+        parking: false,
+        changingRooms: false,
+    });
+    const [showModal, setShowModal] = useState(false);
+    const [showMyFields, setShowMyFields] = useState(false);
+    const [editField, setEditField] = useState(null);
+    const [currentPage, setCurrentPage] = useState(1);
+
+    const fieldsPerPage = 6;
+
+    const fetchFields = async () => {
+        try {
+            setLoading(true);
+            const res = await api.get("/football-fields");
+            const data = res.data?.data?.fields || res.data?.data || [];
+            setFields(data);
+            console.log("data", data)
+        } catch (err) {
+            console.error("❌ Error fetching fields:", err);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchFields();
+    }, []);
+
+    const handleEditField = async (field) => {
+        try {
+            const res = await api.get(`/football-fields/${field._id}`);
+            // Make sure the returned shape matches what FieldForm expects:
+            console.log(res.data?.data?.field)
+            const payload = res.data?.data?.field ?? res.data?.data ?? res.data;
+            setEditField(payload);
+            setShowModal(true);
+        } catch (err) {
+            console.error("❌ Failed to fetch field for edit:", err);
+        }
+    };
+
+    const handleAddField = async () => {
+        await fetchFields();
+        setShowModal(false);
+    };
+
+    const handleUpdateField = async () => {
+        await fetchFields();
+        setEditField(null);
+        setShowModal(false);
+    };
+
+    const filteredFields = fields.filter((field) => {
+        const matchesSearch =
+            field.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            field.location?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            String(field.pricing)?.includes(searchTerm);
+
+        const matchesFilters =
+            (!filters.nightLights || field.nightLights) &&
+            (!filters.bathrooms || field.bathrooms) &&
+            (!filters.parking || field.parking) &&
+            (!filters.changingRooms || field.changingRooms);
+
+        const matchesMyFields = !showMyFields || field.isOwnedByCurrentUser;
+
+        return matchesSearch && matchesFilters && matchesMyFields;
+    });
+
+    const totalPages = Math.ceil(filteredFields.length / fieldsPerPage);
+    const indexOfLast = currentPage * fieldsPerPage;
+    const indexOfFirst = indexOfLast - fieldsPerPage;
+    const currentFields = filteredFields.slice(indexOfFirst, indexOfLast);
+
+    const handlePageChange = (page) => {
+        if (page < 1 || page > totalPages) return;
+        setCurrentPage(page);
+        setTimeout(() => {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }, 100);
+    };
+
+    if (loading)
+        return (
+            <div className={`flex justify-center items-center min-h-[100vh] ${darkMode ? "bg-gray-900 text-gray-100" : "bg-gray-50 text-gray-800"}`}>
+                <Lottie animationData={loadingLottie} loop className="w-40 h-40 sm:w-48 sm:h-48" />
+            </div>
+        );
+
+    return (
+        <main className={`min-h-screen overflow-y-auto pb-24 px-4 sm:px-6 md:px-8 transition-all duration-300 ${darkMode ? "bg-gray-900 text-gray-100" : "bg-gray-50 text-gray-800"}`}>
+            <motion.div
+                className="flex flex-col sm:flex-row justify-between items-center gap-4 mb-8 mt-8 text-center sm:text-left"
+                initial={{ y: -30, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.5 }}
+            >
+                <Button onClick={() => navigate("/dashboard")} className={`flex items-center justify-center gap-2 px-4 w-full sm:w-auto rounded-full shadow-md ${darkMode ? "bg-green-600 hover:bg-green-500 text-white" : "bg-green-500 hover:bg-green-600 text-white"}`}>
+                    <ArrowLeft size={18} />
+                    Back to Dashboard
+                </Button>
+
+                <h1 className="text-2xl sm:text-3xl font-bold flex items-center justify-center gap-3 text-green-600 dark:text-green-400">
+                    <MapPin size={28} />
+                    Football Fields
+                </h1>
+
+                <motion.div whileHover={{ rotate: 20 }} whileTap={{ scale: 0.9 }}>
+                    <Button onClick={() => setDarkMode(!darkMode)} className={`rounded-full shadow-md ${darkMode ? "bg-gradient-to-br from-yellow-400 to-orange-500 text-white" : "bg-gradient-to-br from-gray-800 to-gray-900 text-yellow-300"}`}>
+                        {darkMode ? <Sun size={20} /> : <Moon size={20} />}
+                    </Button>
+                </motion.div>
+            </motion.div>
+
+            <div className="mb-6">
+                <SearchAndFilterBar
+                    user={user}
+                    searchTerm={searchTerm}
+                    setSearchTerm={setSearchTerm}
+                    filters={filters}
+                    setFilters={setFilters}
+                    showMyFields={showMyFields}
+                    setShowMyFields={setShowMyFields}
+                    darkMode={darkMode}
+                />
+            </div>
+
+            {user.role !== "player" && (
+                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="flex justify-center sm:justify-end mb-6">
+                    <Button
+                        onClick={() => {
+                            setEditField(null); // ensure add mode
+                            setShowModal(true);
+                        }}
+                        className="flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 sm:px-5 py-3 rounded-lg shadow-lg w-full sm:w-auto"
+                    >
+                        <PlusCircle size={20} />
+                        Add Football Field
+                    </Button>
+                </motion.div>
+            )}
+
+            {currentFields.length === 0 ? (
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center text-center mt-20">
+                    <Lottie animationData={emptyLottie} loop className="w-52 h-52 sm:w-64 sm:h-64" />
+                    <p className="text-base sm:text-lg font-semibold opacity-80 mt-4">No football fields found.</p>
+                    <Button className="mt-6 text-white bg-gradient-to-r from-green-600 to-green-800 font-bold hover:shadow-xl" onClick={() => fetchFields()}>
+                        Refresh Page
+                    </Button>
+                </motion.div>
+            ) : (
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                    {currentFields.map((field, i) => (
+                        <FieldCard key={field._id || i} user={user} field={field} darkMode={darkMode} onEdit={handleEditField} />
+                    ))}
+                </motion.div>
+            )}
+
+            <div className="flex justify-center mt-10 mb-10">
+                <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
+            </div>
+
+            <Modal show={showModal} setShowModal={setShowModal} darkMode={darkMode}>
+                <FieldForm onAdded={handleAddField} onUpdated={handleUpdateField} editField={editField} darkMode={darkMode} user={user} setShowModal={setShowModal}  />
+            </Modal>
+        </main>
+    );
+}
