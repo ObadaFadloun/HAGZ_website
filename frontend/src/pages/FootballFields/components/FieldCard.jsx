@@ -5,26 +5,37 @@ import Button from "../../../components/Button";
 
 export default function FieldCard({ user, field, darkMode, onEdit, onDelete }) {
     const navigate = useNavigate();
+
     const img =
-        field.images?.length > 0 ? field.images[0].url :
-            field.image ? field.image : "";
+        field.images?.length > 0
+            ? field.images[0].url
+            : field.image
+                ? field.image
+                : "";
 
     const price = field.pricing || field.price || "—";
 
     const handleBook = () => {
+    if (user) {
+        // ✅ User is logged in → go to booking page
         navigate(`/book/${field._id}`, { state: { field } });
-    };
+    } else {
+        // 🚫 Not logged in → redirect to auth/login page
+        navigate("/auth", { state: { from: `/book/${field._id}` } });
+    }
+};
 
-    const canManage = field.isOwnedByCurrentUser || user.role === "admin";
+
+    const canManage = user && (field.isOwnedByCurrentUser || user.role === "admin");
 
     return (
         <motion.div
             whileHover={{ scale: 1.02 }}
-            className={`relative rounded-2xl shadow-md ${darkMode ? "bg-gray-800" : "bg-white"
+            className={`relative rounded-2xl shadow-md ${darkMode ? "bg-gray-800 text-gray-100" : "bg-white text-gray-800"
                 }`}
         >
-            {/* Delete Button */}
-            {canManage && (
+            {/* ✅ Delete Button (only if function exists and user can manage) */}
+            {canManage && typeof onDelete === "function" && (
                 <Button
                     onClick={() => onDelete(field._id)}
                     className="absolute -top-2 -right-2 p-2 bg-red-600 text-white rounded-full hover:bg-red-700 shadow-md transition"
@@ -36,9 +47,9 @@ export default function FieldCard({ user, field, darkMode, onEdit, onDelete }) {
 
             {/* Image */}
             {img ? (
-                <img src={img} alt={field.name} className="w-full h-44 object-cover" />
+                <img src={img} alt={field.name} className="w-full h-44 object-cover rounded-t-2xl" />
             ) : (
-                <div className="w-full h-44 flex items-center justify-center bg-gray-100 dark:bg-gray-700">
+                <div className={`w-full h-44 flex items-center justify-center ${darkMode ? "bg-gray-700" : "bg-gray-100"} rounded-t-2xl`}>
                     No image
                 </div>
             )}
@@ -56,12 +67,14 @@ export default function FieldCard({ user, field, darkMode, onEdit, onDelete }) {
                             ${price} <span className="text-sm text-gray-500">/ hr</span>
                         </div>
                         <div className="flex items-center gap-1 text-yellow-400 text-sm">
-                            <Star size={14} /> <span>{field.averageRating ?? "—"}</span>
+                            <Star size={14} />{" "}
+                            <span>{field.averageRating ?? "—"}</span>
                         </div>
                     </div>
 
-                    <div className="flex gap-5">
-                        {canManage && (
+                    <div className="flex gap-3">
+                        {/* ✅ Show Edit button only if user has permission */}
+                        {canManage && typeof onEdit === "function" && (
                             <Button
                                 className="flex items-center justify-center gap-1 w-24 bg-orange-600 text-white rounded"
                                 onClick={() => onEdit(field)}
@@ -70,6 +83,7 @@ export default function FieldCard({ user, field, darkMode, onEdit, onDelete }) {
                             </Button>
                         )}
 
+                        {/* ✅ Show Book button always (even if not logged in) */}
                         <Button
                             className="flex items-center justify-center gap-1 w-24 bg-green-600 text-white rounded"
                             onClick={handleBook}

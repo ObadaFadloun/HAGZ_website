@@ -24,7 +24,7 @@ export default function Navbar({ darkMode, setDarkMode }) {
                     Home
                 </Button>
                 <Button
-                    onClick={() => navigate("/fields")}
+                    onClick={() => navigate("/football-fields")}
                 >
                     Fields
                 </Button>
