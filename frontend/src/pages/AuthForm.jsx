@@ -45,9 +45,11 @@ function AuthForm({ onAuth, initialMode = "login", darkMode, setDarkMode }) {
             if (forgotPasswordMode) {
                 try {
                     await api.post("/auth/forgot-password", { email: form.email });
-                    setSuccess("✅ Password reset link sent to your email. Please check your inbox.");
+                    setSuccess(
+                        "✅ Password reset link sent to your email. Please check your inbox."
+                    );
 
-                    // Navigate to Reset Password form after 2 seconds
+                    // Navigate to Reset Password form after 5 seconds
                     setTimeout(() => navigate("/reset-password"), 5000);
                 } catch (err) {
                     setError(err.response?.data?.message || "Failed to send reset link.");
@@ -61,11 +63,44 @@ function AuthForm({ onAuth, initialMode = "login", darkMode, setDarkMode }) {
             const endpoint = isSignUp ? "/auth/register" : "/auth/login";
             const res = await api.post(endpoint, form);
 
-            if (res.data.status !== "success") throw new Error("Something went wrong");
+            if (res.data.status !== "success")throw new Error("Something went wrong");
 
             onAuth(res.data);
         } catch (err) {
             console.error(err);
+
+            // ✅ [EDIT 1]: Handle inactive user reactivation confirmation
+            if (err.response?.data?.status === "inactive") {
+
+                // ✅ [EDIT 2]: Confirm BEFORE any async/await call
+                const confirmRecovery = window.confirm(
+                    "Your account is currently deactivated. Do you want to recover it?"
+                );
+
+                if (confirmRecovery) {
+                    try {
+                        const endpoint = isSignUp ? "/auth/register" : "/auth/login";
+                        const reactivationRes = await api.post(endpoint, {
+                            ...form,
+                            reactivate: true,
+                        });
+
+                        alert("✅ Your account has been successfully reactivated!");
+                        onAuth(reactivationRes.data);
+                        return;
+                    } catch (reactivationError) {
+                        console.error(reactivationError);
+                        alert(
+                            reactivationError.response?.data?.message ||
+                            "Reactivation failed!"
+                        );
+                    }
+                }
+
+                return; // ✅ Stop further execution
+            }
+
+             // ✅ [EDIT 3]: Regular error message for other issues
             setError(err.response?.data?.message || "Something went wrong ❌");
         } finally {
             setLoading(false);
@@ -259,7 +294,8 @@ function AuthForm({ onAuth, initialMode = "login", darkMode, setDarkMode }) {
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0, y: -10 }}
                                     transition={{ duration: 0.4 }}
-                                    className={`text-sm mb-4 text-center ${success ? "text-green-500" : "text-red-500"}`}
+                                    className={`text-sm mb-4 text-center ${success ? "text-green-500" : "text-red-500"
+                                        }`}
                                 >
                                     {success || error}
                                 </motion.p>
@@ -270,8 +306,8 @@ function AuthForm({ onAuth, initialMode = "login", darkMode, setDarkMode }) {
                         <Button
                             disabled={loading}
                             className={`w-full rounded-xl shadow-md text-white ${loading
-                                ? "bg-gray-500 cursor-not-allowed"
-                                : "bg-gradient-to-r from-green-600 to-green-800"
+                                    ? "bg-gray-500 cursor-not-allowed"
+                                    : "bg-gradient-to-r from-green-600 to-green-800"
                                 }`}
                         >
                             {loading
@@ -298,7 +334,9 @@ function AuthForm({ onAuth, initialMode = "login", darkMode, setDarkMode }) {
                         >
                             <Button
                                 onClick={() => setForgotPasswordMode(true)}
-                                className={`underline font-medium ${darkMode ? "text-green-400 hover:text-green-300" : "text-green-700 hover:text-green-800"
+                                className={`underline font-medium ${darkMode
+                                        ? "text-green-400 hover:text-green-300"
+                                        : "text-green-700 hover:text-green-800"
                                     }`}
                             >
                                 Forgot password?
@@ -317,7 +355,9 @@ function AuthForm({ onAuth, initialMode = "login", darkMode, setDarkMode }) {
                         >
                             <Button
                                 onClick={() => setForgotPasswordMode(false)}
-                                className={`underline font-medium ${darkMode ? "text-green-400 hover:text-green-300" : "text-green-700 hover:text-green-800"
+                                className={`underline font-medium ${darkMode
+                                        ? "text-green-400 hover:text-green-300"
+                                        : "text-green-700 hover:text-green-800"
                                     }`}
                             >
                                 ← Back to login
@@ -337,7 +377,9 @@ function AuthForm({ onAuth, initialMode = "login", darkMode, setDarkMode }) {
                             {isSignUp ? "Already have an account?" : "Need an account?"}{" "}
                             <Button
                                 onClick={toggleForm}
-                                className={`underline font-medium ${darkMode ? "text-green-400 hover:text-green-300" : "text-green-700 hover:text-green-800"
+                                className={`underline font-medium ${darkMode
+                                        ? "text-green-400 hover:text-green-300"
+                                        : "text-green-700 hover:text-green-800"
                                     }`}
                             >
                                 {isSignUp ? "Log In" : "Sign Up"}

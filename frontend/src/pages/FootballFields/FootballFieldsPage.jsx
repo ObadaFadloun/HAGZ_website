@@ -142,7 +142,7 @@ export default function FootballFieldsPage({ user, darkMode, setDarkMode }) {
                 </Button>
 
 
-                <h1 className="text-2xl sm:text-3xl font-bold flex items-center justify-center gap-3 text-green-600 dark:text-green-400">
+                <h1 className={`text-2xl sm:text-3xl font-bold flex items-center justify-center gap-3 ${darkMode? "text-green-400" : "text-green-600"}`}>
                     <MapPin size={28} />
                     Football Fields
                 </h1>

@@ -47,6 +47,19 @@ export default function AdminUsers({ darkMode, setDarkMode }) {
         setCurrentPage(page);
     };
 
+    const handleDelete = async (userId) => {
+        if (!window.confirm("Are you sure you want to delete this user?")) return;
+
+        try {
+            await api.delete(`/users/${userId}`);
+            setUsers((prev) => prev.filter((u) => u._id !== userId));
+            alert("User deleted successfully ✅");
+        } catch (err) {
+            console.error(err);
+            alert("Failed to delete user ❌");
+        }
+    };
+
     if (loading)
         return (
             <div className={`flex justify-center items-center h-screen ${darkMode ? "bg-gray-900 text-gray-100" : "bg-gray-50 text-gray-800"}`}>
@@ -133,6 +146,7 @@ export default function AdminUsers({ darkMode, setDarkMode }) {
                                     <th className="p-4">Email</th>
                                     <th className="p-4">Role</th>
                                     <th className="p-4">Joined</th>
+                                    <th className="p-4">Delete</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -170,6 +184,14 @@ export default function AdminUsers({ darkMode, setDarkMode }) {
                                                     day: "numeric",
                                                 })
                                                 : "—"}
+                                        </td>
+                                        <td>
+                                            <Button
+                                                onClick={() => handleDelete(user._id)}
+                                                className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md"
+                                            >
+                                                Delete
+                                            </Button>
                                         </td>
                                     </motion.tr>
                                 ))}
