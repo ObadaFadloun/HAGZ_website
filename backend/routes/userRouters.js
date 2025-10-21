@@ -5,10 +5,10 @@ const express = require('express');
 
 const router = express.Router();
 
-router.patch('/updateMe', authController.protect, userController.updateMe);
+router.patch('/update-me', authController.protect, userController.updateMe);
 
 router.patch(
-  '/updateProfilePicture',
+  '/update-profile-picture',
   authController.protect,
   userController.uploadUserPhoto, // multer middleware
   userController.resizeUserPhoto, // process/resize image
@@ -16,21 +16,20 @@ router.patch(
 );
 
 router.patch(
-  '/updateMyPassword',
+  '/update-my-password',
   authController.protect,
   authController.updatePassword
 );
 
-router.post(
-  '/requestOwner',
-  authController.protect,
-  userController.requestOwner
-);
-
-router.delete('/deleteMe', authController.protect, userController.deleteMe);
+router.delete('/delete-me', authController.protect, userController.deleteMe);
 
 // router.route('/').get(authController.protect, authController.restrictTo('admin'), userController.getAllUsers);
-router.route('/').get(userController.getAllUsers);
+router.get(
+  '/',
+  authController.protect,
+  authController.restrictTo('admin'),
+  userController.getAllUsers
+);
 
 module.exports = router;
 

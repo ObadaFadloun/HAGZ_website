@@ -4,6 +4,7 @@ const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const fs = require('fs');
 const path = require('path');
+const upload = require('../middleware/upload');
 
 const filterObj = (obj, ...allowedFields) => {
   const newObj = {};
@@ -16,9 +17,7 @@ const filterObj = (obj, ...allowedFields) => {
 };
 
 // 🧩 1. Middleware to handle single image upload (field: profileImage)
-exports.uploadUserPhoto = require('../middleware/upload').single(
-  'profileImage'
-);
+exports.uploadUserPhoto = upload.uploadProfilePic;
 
 // 🧩 2. Resize image and set its path in req.body
 exports.resizeUserPhoto = catchAsync(async (req, res, next) => {

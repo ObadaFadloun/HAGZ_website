@@ -13,14 +13,15 @@ const AppError = require('./utils/appError');
 const globelErrorHandler = require('./controllers/errorController');
 const userRouter = require('./routes/userRouters');
 const authRouter = require('./routes/authRouters');
-const ownerRequestRouter = require('./routes/ownerRequestRoutes')
+const ownerRequestRouter = require('./routes/ownerRequestRoutes');
+const footballFieldRoutes = require('./routes/footballFieldRoutes');
 
 const app = express();
 
 app.use(
   cors({
     origin: 'http://localhost:5173', // your frontend URL
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE',],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     credentials: true
   })
 );
@@ -65,7 +66,8 @@ app.use(express.static(`${__dirname}/public`));
 
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/users', userRouter);
-app.use('/api/v1/ownerRequests', ownerRequestRouter);
+app.use('/api/v1/owner-requests', ownerRequestRouter);
+app.use('/api/v1/football-fields', footballFieldRoutes);
 
 app.use((req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));

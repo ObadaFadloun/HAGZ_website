@@ -1,7 +1,7 @@
 const multer = require('multer');
 const AppError = require('../utils/appError');
 
-// Store in memory (you can later upload to Cloudinary, S3, etc.)
+// Store in memory (for cloud upload or later processing)
 const multerStorage = multer.memoryStorage();
 
 // Only accept images
@@ -18,4 +18,10 @@ const upload = multer({
   fileFilter: multerFilter,
 });
 
-module.exports = upload;
+// ✅ Middleware for single profile picture
+const uploadProfilePic = upload.single('profileImage');
+
+// ✅ Middleware for football field images
+const uploadFieldImages = upload.array('images', 6);
+
+module.exports = { uploadProfilePic, uploadFieldImages };

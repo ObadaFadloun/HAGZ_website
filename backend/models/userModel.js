@@ -3,6 +3,8 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcryptjs'); // Fix the typo in the require statement
 
+const FootballField = require('./footballFieldModel');
+
 const userSchema = new mongoose.Schema(
   {
     firstName: {
@@ -59,8 +61,7 @@ const userSchema = new mongoose.Schema(
     passwordResetExpires: Date,
     createdAt: {
       type: Date,
-      default: Date.now(),
-      select: false
+      default: Date.now()
     },
     active: {
       type: Boolean,
@@ -120,6 +121,20 @@ userSchema.methods.createPasswordResetToken = function () {
 
   return resetToken;
 };
+
+userSchema.pre('findOneAndDelete', async function (next) {
+  const user = await this.model.findOne(this.getQuery());
+
+  if (!user) {
+    return next();
+  }
+
+  if (user.role === 'owner') {
+    await FootballField.deleteMany({ ownerId: user._id });
+  }
+
+  next();
+});
 
 const User = mongoose.model('User', userSchema);
 
