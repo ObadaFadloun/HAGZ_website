@@ -5,25 +5,28 @@ const express = require('express');
 
 const router = express.Router();
 
-router.patch('/update-me', authController.protect, userController.updateMe);
+// Protect all routes below
+router.use(authController.protect);
+
+router.patch('/update-me', userController.updateMe);
 
 router.patch(
   '/update-profile-picture',
-  authController.protect,
   userController.uploadUserPhoto, // multer middleware
   userController.resizeUserPhoto, // process/resize image
   userController.updateProfilePicture // update in DB
 );
 
-router.patch(
-  '/update-my-password',
-  authController.protect,
-  authController.updatePassword
+router.patch('/update-my-password', authController.updatePassword);
+
+router.delete('/delete-me', userController.deleteMe);
+
+router.delete(
+  '/:id',
+  authController.restrictTo('admin'),
+  userController.deleteUser
 );
 
-router.delete('/delete-me', authController.protect, userController.deleteMe);
-
-// router.route('/').get(authController.protect, authController.restrictTo('admin'), userController.getAllUsers);
 router.get(
   '/',
   authController.protect,
@@ -33,8 +36,6 @@ router.get(
 
 module.exports = router;
 
-// router.post('/logout', userController.logout);
-
 // User Profile & Actions (Protected - requires authentication);
 // router.get('/profile', authUser, userController.getUserProfile);
 
@@ -43,10 +44,6 @@ module.exports = router;
 
 // User's Reviews (Protected)
 // router.get('/my-reviews', authUser, userController.getMyReviews);
-
-// Team Management for the User (Protected)
-// router.get('/my-teams', authUser, userController.getMyTeams);
-// router.post('/join-team', authUser, userController.joinTeam); // Using an invite code/link
 
 // Loyalty Program (Protected)
 // router.get('/loyalty-points', authUser, userController.getLoyaltyPoints);

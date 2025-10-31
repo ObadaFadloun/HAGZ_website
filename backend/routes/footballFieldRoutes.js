@@ -4,7 +4,7 @@ const authController = require('../controllers/authController');
 
 const router = express.Router();
 
-router.get('/public', footballFieldController.getAllFields);
+router.get('/public', footballFieldController.getPublicFields);
 
 router.route('/:id').get(footballFieldController.getField);
 

@@ -27,7 +27,7 @@ export default function Sidebar({ user, onLogout, darkMode, setDarkMode, isOpen,
         { name: "Previous Requests", icon: ShieldUser, path: "/owner-requests?type=previous", role: "admin" },
         { name: "Users", icon: Users, path: "/users", role: "admin" },
         { name: "Football Fields", icon: Volleyball, path: "/football-fields", role: ["admin", "owner", "player"] },
-        { name: "Bookings", icon: Calendar, path: "/dashboard/bookings", role: ["admin", "owner", "player"] },
+        { name: "Reservations", icon: Calendar, path: "/reservations", role: ["admin", "owner", "player"] },
         { name: "Gift", icon: Gift, path: "/dashboard/gift", role: "owner" },
         { name: "Settings", icon: Settings, path: "/settings", role: ["admin", "owner", "player"] },
     ];
