@@ -12,7 +12,6 @@ import WeatherCard from "./components/WeatherCard";
 import FacilitiesCard from "./components/FacilitiesCard";
 import SlotsList from "./components/SlotsList";
 import DateSelector from "./components/DateSelector";
-import EditReservationModal from "./components/EditReservationModal";
 
 export default function BookingPage({ user, darkMode, setDarkMode, onBooked }) {
     const navigate = useNavigate();
@@ -188,22 +187,6 @@ export default function BookingPage({ user, darkMode, setDarkMode, onBooked }) {
         }
     };
 
-    const [editModal, setEditModal] = useState({ show: false, reservation: null });
-
-    const openEditModal = (slot) => {
-        const myReservation = BookedSlots.find(
-            (r) => r.startTime.slice(0, 5) === slot.label.split(" - ")[0] && r.player?._id === user?._id
-        );
-        if (myReservation) {
-            setEditModal({ show: true, reservation: myReservation });
-        }
-    };
-
-    const handleUpdatedReservation = (updated) => {
-        setBookedSlots((prev) =>
-            prev.map((r) => (r._id === updated._id ? updated : r))
-        );
-    };
 
     if (loading) return <LoadingScreen darkMode={darkMode} />;
 
@@ -278,18 +261,6 @@ export default function BookingPage({ user, darkMode, setDarkMode, onBooked }) {
                         handleBook={handleBook}
                         fetchSlots={fetchReservationsForField}
                         setSlots={setSlots}
-                        openEditModal={(reservation) =>
-                            setEditModal({ show: true, reservation })
-                        }
-                    />
-
-                    <EditReservationModal
-                        slots={slots}
-                        show={editModal.show}
-                        reservation={editModal.reservation}
-                        onClose={() => setEditModal({ show: false, reservation: null })}
-                        onUpdated={handleUpdatedReservation}
-                        darkMode={darkMode}
                     />
                 </motion.aside>
             </motion.section>
