@@ -7,6 +7,7 @@ import Autoplay from "embla-carousel-autoplay";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { motion } from "framer-motion";
 import api from "../utils/api"
+import formatRating from "../utils/format"
 
 export default function LandingPage({ darkMode }) {
   const [popularFields, setPopularFields] = useState([]);
@@ -177,7 +178,7 @@ export default function LandingPage({ darkMode }) {
                       </div>
                       <div className="flex items-center gap-1 text-yellow-400 text-sm">
                         <Star size={14} />{" "}
-                        <span>{field.averageRating ?? "—"}</span>
+                        <span>{formatRating(field.averageRating) ?? "—"}</span>
                       </div>
                     </div>
                     <div className="py-4 text-right">

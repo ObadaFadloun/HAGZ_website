@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Star, Sun, Moon } from "lucide-react";
 import Button from "../../../components/Button";
+import formatRating from "../../../utils/format"
 
 export default function CoverSection({ field, darkMode, setDarkMode, navigate }) {
     const [coverIndex, setCoverIndex] = useState(0);
@@ -100,7 +101,7 @@ export default function CoverSection({ field, darkMode, setDarkMode, navigate })
                     <h1 className="text-2xl sm:text-4xl font-extrabold flex items-center gap-3">
                         {field?.name}
                         <span className="text-yellow-300 flex items-center gap-1 text-base">
-                            <Star size={18} /> {field?.averageRating ?? "—"}
+                            <Star size={18} /> {formatRating(field?.averageRating) ?? "—"}
                         </span>
                     </h1>
 

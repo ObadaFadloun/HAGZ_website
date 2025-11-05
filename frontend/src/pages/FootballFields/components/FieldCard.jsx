@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { MapPin, Star, Calendar, Trash2 } from "lucide-react";
 import Button from "../../../components/Button";
+import formatRating from "../../../utils/format"
 
 export default function FieldCard({ user, field, darkMode, onEdit, onDelete }) {
     const navigate = useNavigate();
@@ -68,7 +69,7 @@ export default function FieldCard({ user, field, darkMode, onEdit, onDelete }) {
                         </div>
                         <div className="flex items-center gap-1 text-yellow-400 text-sm">
                             <Star size={14} />{" "}
-                            <span>{field.averageRating ?? "—"}</span>
+                            <span>{formatRating(field.averageRating) ?? "—"}</span>
                         </div>
                     </div>
 
