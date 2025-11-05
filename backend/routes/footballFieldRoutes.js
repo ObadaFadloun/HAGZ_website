@@ -30,4 +30,6 @@ router
     footballFieldController.deleteField
   );
 
+router.get('/:id/available-slots', footballFieldController.getAvailableSlots);
+
 module.exports = router;
