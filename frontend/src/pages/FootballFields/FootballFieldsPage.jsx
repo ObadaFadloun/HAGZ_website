@@ -38,7 +38,7 @@ export default function FootballFieldsPage({ user, darkMode, setDarkMode }) {
     const fetchFields = async () => {
         try {
             setLoading(true);
-            const res = await api.get("/football-fields/public"); // 👈 CHANGED endpoint
+            const res = await api.get("/football-fields");
             const data = res.data?.data?.fields || res.data?.data || [];
             setFields(data);
         } catch (err) {

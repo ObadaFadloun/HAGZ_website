@@ -14,7 +14,6 @@ import {
     ShieldAlert,
     ShieldUser,
     Volleyball,
-    VolleyballIcon,
     Sun,
     Moon
 } from "lucide-react";
