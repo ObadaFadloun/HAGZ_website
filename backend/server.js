@@ -1,6 +1,11 @@
 const mongoose = require('mongoose');
 const app = require('./app');
 
+(async () => {
+  const { autoCompleteReservations } = await import("./utils/autoCompleteReservations.mjs");
+  autoCompleteReservations();
+})();
+
 process.on('uncaughtException', (err) => {
   console.log('UNCAUGHT EXCEPTION! 💥 Shutting down...');
   console.log(err.name, err.message);
@@ -38,3 +43,5 @@ process.on('unhandledRejection', (err) => {
     process.exit(1);
   });
 });
+
+require('./cronJobs/deleteOldUsers');

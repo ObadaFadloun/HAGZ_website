@@ -1,11 +1,23 @@
 const FootballField = require('../models/footballFieldModel');
+const Reservation = require('../models/reservationModel');
 const catchAsync = require('../utils/catchAsync');
 const upload = require('../middleware/upload');
 const sharp = require('sharp');
 const path = require('path');
 const fs = require('fs');
 
-// ✅ Get all fields (with search + pagination)
+exports.getPublicFields = catchAsync(async (req, res) => {
+  const fields = await FootballField.find()
+    .sort({ averageRating: -1 })
+    .limit(6);
+
+  res.status(200).json({
+    status: 'success',
+    results: fields.length,
+    data: { fields }
+  });
+});
+
 exports.getAllFields = catchAsync(async (req, res) => {
   const fields = await FootballField.find().populate(
     'ownerId',
@@ -26,23 +38,28 @@ exports.getAllFields = catchAsync(async (req, res) => {
 });
 
 // ✅ Get single field
-exports.getField = catchAsync(async (req, res) => {
-  const field = await FootballField.findById(req.params.id).populate(
-    'ownerId',
-    'firstName lastName email'
-  );
+exports.getField = async (req, res) => {
+  try {
+    const field = await FootballField.findById(req.params.id).populate(
+      'ownerId',
+      'firstName lastName email'
+    );
 
-  if (!field) {
-    return res
-      .status(404)
-      .json({ status: 'fail', message: 'Football field not found' });
+    if (!field) {
+      return res
+        .status(404)
+        .json({ status: 'fail', message: 'Football field not found' });
+    }
+
+    res.status(200).json({
+      status: 'success',
+      data: { field }
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: err.message });
   }
-
-  res.status(200).json({
-    status: 'success',
-    data: { field }
-  });
-});
+};
 
 // ✅ Middleware to upload field images
 exports.uploadFieldImages = upload.uploadFieldImages;
@@ -202,3 +219,88 @@ exports.deleteField = catchAsync(async (req, res) => {
 
   res.status(204).json({ status: 'success', data: null });
 });
+
+exports.getAvailableSlots = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { date, userId } = req.query;
+
+    if (!date) {
+      return res.status(400).json({ message: 'Date is required' });
+    }
+
+    const field = await FootballField.findById(id);
+    if (!field) {
+      return res.status(404).json({ message: 'Field not found' });
+    }
+
+    const reservations = await Reservation.find({ field: id, date })
+      .populate('player', '_id firstName lastName')
+      .lean();
+
+    const openHour = parseInt(field.openTime.split(':')[0]);
+    const closeHour = parseInt(field.closeTime.split(':')[0]);
+    const availableSlots = [];
+
+    const now = new Date();
+    const todayISO = now.toISOString().slice(0, 10); // yyyy-mm-dd
+
+    for (let h = openHour; h < closeHour; h++) {
+      const startTime = `${String(h).padStart(2, '0')}:00`;
+      const endTime = `${String(h + 1).padStart(2, '0')}:00`;
+
+      // 🚫 Skip past hours if selected date is today
+      if (date === todayISO && h <= now.getHours()) {
+        continue;
+      }
+
+      const reservation = reservations.find(
+        (r) => r.startTime === startTime && r.endTime === endTime
+      );
+
+      const status = reservation ? reservation.status : 'available';
+      const player = reservation?.player
+        ? {
+            _id: reservation.player._id,
+            name: `${reservation.player.firstName || ''} ${
+              reservation.player.lastName || ''
+            }`.trim()
+          }
+        : null;
+
+      // 🚫 Skip active & completed slots
+      if (status === 'active' || status === 'completed') {
+        continue;
+      }
+
+      // 🧩 If cancelled by same player → skip
+      if (
+        status === 'cancelled' &&
+        player?._id?.toString() === userId?.toString()
+      ) {
+        continue;
+      }
+
+      // ✅ If cancelled by another player → show as available
+      const finalStatus =
+        status === 'cancelled' && player?._id?.toString() !== userId?.toString()
+          ? 'available'
+          : status;
+
+      availableSlots.push({
+        id: `${id}-${h}`,
+        label: `${startTime} - ${endTime}`,
+        startTime,
+        endTime,
+        status: finalStatus,
+        player,
+        price: field.pricing || 0
+      });
+    }
+
+    res.json({ slots: availableSlots });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+};

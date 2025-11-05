@@ -15,6 +15,9 @@ const userRouter = require('./routes/userRouters');
 const authRouter = require('./routes/authRouters');
 const ownerRequestRouter = require('./routes/ownerRequestRoutes');
 const footballFieldRoutes = require('./routes/footballFieldRoutes');
+const reservationRoutes = require('./routes/reservationRoutes');
+const reviewRoutes = require('./routes/reviewRoutes');
+const weatherRoute = require('./routes/weatherRoute');
 
 const app = express();
 
@@ -68,6 +71,9 @@ app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/owner-requests', ownerRequestRouter);
 app.use('/api/v1/football-fields', footballFieldRoutes);
+app.use('/api/v1/reservations', reservationRoutes);
+app.use('/api/v1/reviews', reviewRoutes);
+app.use('/api/v1/weather', weatherRoute);
 
 app.use((req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
