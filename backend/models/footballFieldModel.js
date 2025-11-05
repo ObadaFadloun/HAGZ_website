@@ -1,38 +1,6 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
 
-const reviewSchema = new mongoose.Schema({
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: [true, 'User ID is required for a review']
-  },
-  rating: {
-    type: Number,
-    required: [true, 'Rating is required'],
-    min: [1, 'Rating must be at least 1'],
-    max: [5, 'Rating cannot be more than 5']
-  },
-  comment: {
-    type: String,
-    required: [true, 'Comment is required'],
-    trim: true,
-    maxlength: [500, 'Comment cannot exceed 500 characters']
-  },
-  likes: {
-    type: Number,
-    default: 0
-  },
-  dislikes: {
-    type: Number,
-    default: 0
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now
-  }
-});
-
 const footballFieldSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -160,8 +128,6 @@ const footballFieldSchema = new mongoose.Schema({
     }
   ],
 
-  // Reviews & Ratings
-  reviews: [reviewSchema],
   averageRating: {
     type: Number,
     default: 0,
@@ -205,17 +171,6 @@ const footballFieldSchema = new mongoose.Schema({
   // System
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
-});
-
-// Auto update ratings
-footballFieldSchema.pre('save', function (next) {
-  if (this.reviews && this.reviews.length > 0) {
-    const total = this.reviews.reduce((sum, review) => sum + review.rating, 0);
-    this.averageRating = total / this.reviews.length;
-    this.totalReviews = this.reviews.length;
-  }
-  this.updatedAt = Date.now();
-  next();
 });
 
 footballFieldSchema.virtual('topComments').get(function () {

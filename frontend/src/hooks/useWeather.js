@@ -17,10 +17,9 @@ export default function useWeather({ location, mapLink, date }) {
   };
 
   useEffect(() => {
-      const { lat, lon } = extractCoords(mapLink);
-      if ((!lat || !lon) && !location) return;
-      if (!date) return;
-      console.log("hi")
+    const { lat, lon } = extractCoords(mapLink);
+    if ((!lat || !lon) && !location) return;
+    if (!date) return;
 
     const fetchWeather = async () => {
       try {
@@ -30,7 +29,6 @@ export default function useWeather({ location, mapLink, date }) {
           params: { location, lat, lon, date },
         });
 
-        console.log("first")
         setWeather(data);
       } catch (err) {
         console.error("Error fetching weather:", err);

@@ -12,6 +12,7 @@ import WeatherCard from "./components/WeatherCard";
 import FacilitiesCard from "./components/FacilitiesCard";
 import SlotsList from "./components/SlotsList";
 import DateSelector from "./components/DateSelector";
+import ReviewsSection from "./components/ReviewsSection";
 
 export default function BookingPage({ user, darkMode, setDarkMode, onBooked }) {
     const navigate = useNavigate();
@@ -28,6 +29,9 @@ export default function BookingPage({ user, darkMode, setDarkMode, onBooked }) {
     });
     const [selectedSlot, setSelectedSlot] = useState(null);
     const [slots, setSlots] = useState([]);
+
+    const [reviews, setReviews] = useState([]);
+    const [loadingReviews, setLoadingReviews] = useState(true);
 
     const fetchField = async () => {
         try {
@@ -48,8 +52,22 @@ export default function BookingPage({ user, darkMode, setDarkMode, onBooked }) {
         }
     };
 
+    const fetchReviews = async () => {
+        try {
+            setLoadingReviews(true);
+            const res = await api.get(`/reviews/field/${id}`);
+            setReviews(res.data?.data || []);
+        } catch (err) {
+            console.error("Failed to fetch reviews:", err);
+        } finally {
+            setLoadingReviews(false);
+        }
+    };
+
+
     useEffect(() => {
         fetchField();
+        fetchReviews();
     }, [id]);
 
     const fetchReservationsForField = async () => {
@@ -122,7 +140,7 @@ export default function BookingPage({ user, darkMode, setDarkMode, onBooked }) {
                 playerId: isBookedReservation?.player?._id || null,
                 status: isBookedReservation?.status || null,
                 available: !(isPastDay || isPastHour || !!isBookedReservation),
-                isPast: isPastDay || isPastHour, // ✅ added for UI fading
+                isPast: isPastDay || isPastHour,
             });
         }
 
@@ -187,6 +205,32 @@ export default function BookingPage({ user, darkMode, setDarkMode, onBooked }) {
         }
     };
 
+    const handleAddComment = async ({ text, rating }) => {
+        try {
+            const res = await api.post("/reviews", {
+                field: id,
+                text,
+                rating,
+            });
+            const newReview = res.data?.data;
+            setReviews((prev) => [newReview, ...prev]);
+
+            await fetchField();
+        } catch (err) {
+            alert(err.response?.data?.message || "Failed to add review");
+        }
+    };
+
+    const handleDeleteReview = async (reviewId) => {
+        if (!window.confirm("Are you sure you want to delete this review?")) return;
+        try {
+            await api.delete(`/reviews/${reviewId}`);
+            setReviews((prev) => prev.filter((r) => r._id !== reviewId));
+            alert("Review deleted successfully ✅");
+        } catch (err) {
+            alert(err.response?.data?.message || "Failed to delete review");
+        }
+    };
 
     if (loading) return <LoadingScreen darkMode={darkMode} />;
 
@@ -239,6 +283,19 @@ export default function BookingPage({ user, darkMode, setDarkMode, onBooked }) {
                         />
                         <FacilitiesCard field={field} darkMode={darkMode} />
                     </div>
+                    {loadingReviews ? (
+                        <div className="text-center text-sm opacity-70 mt-4">Loading reviews...</div>
+                    ) : (
+                        <ReviewsSection
+                            reviews={reviews}
+                            darkMode={darkMode}
+                            user={user}
+                            onAddComment={handleAddComment}
+                            onDeleteReview={handleDeleteReview}
+                        />
+                    )}
+
+
                 </motion.article>
 
                 <motion.aside
