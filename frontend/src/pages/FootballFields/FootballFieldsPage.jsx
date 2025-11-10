@@ -6,7 +6,7 @@ import Lottie from "lottie-react";
 
 import api from "../../utils/api";
 import loadingLottie from "../../assets/loading.json";
-import emptyLottie from "../../assets/EmptyState.json";
+import noFootballFields from "../../assets/EmptyState.json";
 
 import Button from "../../components/Button";
 import Pagination from "../../components/Pagination";
@@ -187,7 +187,7 @@ export default function FootballFieldsPage({ user, darkMode, setDarkMode }) {
 
             {currentFields.length === 0 ? (
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center text-center mt-20">
-                    <Lottie animationData={emptyLottie} loop className="w-52 h-52 sm:w-64 sm:h-64" />
+                    <Lottie animationData={noFootballFields} loop className="w-52 h-52 sm:w-64 sm:h-64" />
                     <p className="text-base sm:text-lg font-semibold opacity-80 mt-4">No football fields found.</p>
                     <Button className="mt-6 text-white bg-gradient-to-r from-green-600 to-green-800 font-bold hover:shadow-xl" onClick={() => fetchFields()}>
                         Refresh Page
