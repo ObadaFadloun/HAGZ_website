@@ -1,13 +1,49 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import Lottie from "lottie-react";
+import loadingLottie from "../assets/loading.json";
 import Sidebar from "../components/Sidebar";
+import api from '../utils/api';
+import { capitalize } from "../utils/format";
 
 export default function AdminDashboard({ user, onLogout, darkMode, setDarkMode }) {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+    const [dashboard, setDashboard] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchDashboard = async () => {
+            try {
+                const res = await api.get("/admin/dashboard");
+                setDashboard(res.data);
+            } catch (err) {
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchDashboard();
+    }, []);
+
+    if (loading) {
+        return (
+            <motion.div
+                className={`min-h-screen w-screen flex flex-col justify-center items-center ${darkMode ? "bg-gradient-to-br from-gray-900 to-gray-800 text-gray-50" : ""}`}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+            >
+                <Lottie animationData={loadingLottie} loop className="w-56 h-56 mb-6" />
+                <p className="text-lg animate-pulse">Loading requests...</p>
+            </motion.div>
+        );
+    }
+
+    if (error) return <p className="text-red-500">Error: {error}</p>;
 
     return (
         <div className="flex min-h-screen h-screen overflow-hidden">
-            {/* Sidebar with motion slide-in */}
+            {/* Sidebar */}
             <motion.div
                 initial={{ x: -250, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
@@ -30,10 +66,7 @@ export default function AdminDashboard({ user, onLogout, darkMode, setDarkMode }
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.7 }}
                 className={`flex-1 flex flex-col overflow-y-scroll transition-colors duration-300 
-                ${darkMode
-                        ? "bg-gradient-to-br from-gray-900 to-gray-800 text-gray-300"
-                        : "bg-gradient-to-br from-gray-50 to-gray-300 text-gray-950"
-                    }`}
+                    ${darkMode ? "bg-gradient-to-br from-gray-900 to-gray-800 text-gray-300" : "bg-gradient-to-br from-gray-50 to-gray-300 text-gray-950"}`}
             >
                 {/* Top Navbar */}
                 <motion.header
@@ -41,27 +74,11 @@ export default function AdminDashboard({ user, onLogout, darkMode, setDarkMode }
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ duration: 0.6, ease: "easeOut" }}
                     className={`shadow px-6 py-4 flex justify-between items-center transition-colors duration-300
-                    ${darkMode ? "bg-gray-800" : "bg-gradient-to-r from-gray-100 to-gray-300"}`}
+                        ${darkMode ? "bg-gray-800" : "bg-gradient-to-r from-gray-100 to-gray-300"}`}
                 >
-                    <h1
-                        className={`text-xl font-bold ${darkMode ? "text-green-400" : "text-green-600"}`}
-                    >
+                    <h1 className={`text-xl font-bold py-2 ${darkMode ? "text-green-400" : "text-green-600"}`}>
                         Admin Dashboard
                     </h1>
-                    <div className="flex items-center gap-4">
-                        <motion.input
-                            initial={{ width: 0, opacity: 0 }}
-                            animate={{ width: 180, opacity: 1 }}
-                            transition={{ duration: 0.6 }}
-                            type="text"
-                            placeholder="Search..."
-                            className={`px-3 py-2 rounded-lg border shadow-sm
-                            ${darkMode
-                                    ? "border-gray-700 bg-gray-700 text-white placeholder:text-gray-400"
-                                    : "border-gray-300 bg-white text-gray-950 placeholder:text-gray-500"
-                                }`}
-                        />
-                    </div>
                 </motion.header>
 
                 {/* Content */}
@@ -72,26 +89,22 @@ export default function AdminDashboard({ user, onLogout, darkMode, setDarkMode }
                         animate="visible"
                         variants={{
                             hidden: { opacity: 0, y: 20 },
-                            visible: {
-                                opacity: 1,
-                                y: 0,
-                                transition: { staggerChildren: 0.15 },
-                            },
+                            visible: { opacity: 1, y: 0, transition: { staggerChildren: 0.15 } },
                         }}
                         className="grid grid-cols-1 md:grid-cols-3 gap-6"
                     >
-                        {[{ title: "Total Bookings", value: "120" },
-                        { title: "Active Players", value: "340" },
-                        { title: "Revenue", value: "$5,430" }].map((stat, i) => (
+                        {[
+                            { title: "Total Bookings", value: dashboard.totalBookings },
+                            { title: "Active Players", value: dashboard.activePlayers },
+                            { title: "Revenue", value: dashboard.revenue + "$" }
+                        ].map((stat, i) => (
                             <motion.div
                                 key={i}
                                 whileHover={{ scale: 1.05, rotate: 1 }}
                                 whileTap={{ scale: 0.97 }}
                                 transition={{ type: "spring", stiffness: 200 }}
                                 className={`p-6 rounded-xl shadow-lg transition-all duration-300 
-                                ${darkMode
-                                        ? "bg-gradient-to-br from-gray-800 to-gray-700 hover:shadow-green-500/30"
-                                        : "bg-gradient-to-br from-white to-gray-200 hover:shadow-green-300/30"}`}
+                                    ${darkMode ? "bg-gradient-to-br from-gray-800 to-gray-700 hover:shadow-green-500/30" : "bg-gradient-to-br from-white to-gray-200 hover:shadow-green-300/30"}`}
                             >
                                 <h3 className="text-lg font-semibold">{stat.title}</h3>
                                 <motion.p
@@ -112,14 +125,9 @@ export default function AdminDashboard({ user, onLogout, darkMode, setDarkMode }
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8 }}
                         className={`p-6 rounded-xl shadow-lg transition-all duration-300
-                        ${darkMode
-                                ? "bg-gradient-to-br from-gray-800 to-gray-700"
-                                : "bg-gradient-to-br from-white to-gray-200"}`}
+                            ${darkMode ? "bg-gradient-to-br from-gray-800 to-gray-700" : "bg-gradient-to-br from-white to-gray-200"}`}
                     >
-                        <h3
-                            className={`text-lg font-semibold mb-4 
-                            ${darkMode ? "text-green-400" : "text-green-600"}`}
-                        >
+                        <h3 className={`text-lg font-semibold mb-4 ${darkMode ? "text-green-400" : "text-green-600"}`}>
                             Recent Bookings
                         </h3>
                         <table className="w-full text-left border-collapse">
@@ -128,10 +136,7 @@ export default function AdminDashboard({ user, onLogout, darkMode, setDarkMode }
                                     initial={{ opacity: 0, y: -10 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ delay: 0.2 }}
-                                    className={`border-b font-medium
-                                    ${darkMode
-                                            ? "border-gray-700 text-green-400"
-                                            : "border-gray-400 text-green-600"}`}
+                                    className={`border-b font-medium ${darkMode ? "border-gray-700 text-green-400" : "border-gray-400 text-green-600"}`}
                                 >
                                     <th className="p-2">Player</th>
                                     <th className="p-2">Field</th>
@@ -140,10 +145,7 @@ export default function AdminDashboard({ user, onLogout, darkMode, setDarkMode }
                                 </motion.tr>
                             </thead>
                             <tbody>
-                                {[
-                                    { name: "Ahmed Ali", field: "Green Arena", date: "Oct 5, 2025", status: "Confirmed", color: "text-green-600" },
-                                    { name: "Omar Youssef", field: "Elite Park", date: "Oct 7, 2025", status: "Pending", color: "text-yellow-500" }
-                                ].map((row, index) => (
+                                {dashboard.recentBookings.map((rb, index) => (
                                     <motion.tr
                                         key={index}
                                         initial={{ opacity: 0, y: 10 }}
@@ -151,10 +153,18 @@ export default function AdminDashboard({ user, onLogout, darkMode, setDarkMode }
                                         transition={{ delay: 0.3 + index * 0.1 }}
                                         className={`${darkMode ? "border-b border-gray-700" : "border-b border-gray-400"}`}
                                     >
-                                        <td className="p-2">{row.name}</td>
-                                        <td className="p-2">{row.field}</td>
-                                        <td className="p-2">{row.date}</td>
-                                        <td className={`p-2 ${row.color}`}>{row.status}</td>
+                                        <td className="p-2">
+                                            {rb.player
+                                                ? `${capitalize(rb.player.firstName || "—")} ${capitalize(rb.player.lastName || "")}`
+                                                : "Deleted Player"}
+                                        </td>
+                                        <td className="p-2">
+                                            {rb.field ? capitalize(rb.field.name) : "Deleted Field"}
+                                        </td>
+                                        <td className="p-2">{rb.date.split("T")[0]}</td>
+                                        <td className={`p-2 ${rb.status === "completed" ? "text-yellow-500" : rb.status === "active" ? "text-green-500" : "text-red-500"}`}>
+                                            {capitalize(rb.status)}
+                                        </td>
                                     </motion.tr>
                                 ))}
                             </tbody>
