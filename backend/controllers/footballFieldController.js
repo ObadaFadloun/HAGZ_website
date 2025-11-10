@@ -7,7 +7,7 @@ const path = require('path');
 const fs = require('fs');
 
 exports.getPublicFields = catchAsync(async (req, res) => {
-  const fields = await FootballField.find()
+  const fields = await FootballField.find({ isActive: true })
     .sort({ averageRating: -1 })
     .limit(6);
 
@@ -19,15 +19,14 @@ exports.getPublicFields = catchAsync(async (req, res) => {
 });
 
 exports.getAllFields = catchAsync(async (req, res) => {
-  const fields = await FootballField.find().populate(
-    'ownerId',
-    'firstName lastName email'
-  );
+  const fields = await FootballField.find({ isActive: true })
+    .populate('ownerId', 'firstName lastName email')
+    .lean(); // lean() returns plain JS objects
 
   const updatedFields = fields.map((field) => {
     const isOwnedByCurrentUser =
       req.user && field.ownerId?._id.toString() === req.user._id.toString();
-    return { ...field.toObject(), isOwnedByCurrentUser };
+    return { ...field, isOwnedByCurrentUser };
   });
 
   res.status(200).json({

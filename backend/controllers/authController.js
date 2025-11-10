@@ -2,6 +2,7 @@ const crypto = require('crypto');
 const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
+const FootballField = require('../models/footballFieldModel')
 const catchAsync = require('../utils/catchAsync');
 const sendEmail = require('../utils/email');
 
@@ -106,6 +107,14 @@ exports.login = catchAsync(async (req, res) => {
     user.active = true;
     user.deletedAt = null;
     await user.save({ validateBeforeSave: false });
+
+    // If user is an owner, recover all their football fields
+    if (user.role === 'owner') {
+      await FootballField.updateMany(
+        { ownerId: user._id },
+        { $set: { isActive: true } }
+      );
+    }
   }
 
   createSendToken(user, 200, res);

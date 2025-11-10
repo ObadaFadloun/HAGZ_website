@@ -34,7 +34,10 @@ const footballFieldSchema = new mongoose.Schema({
     ref: 'User',
     required: [true, 'Football field owner ID is required']
   },
-
+  isActive: {
+    type: Boolean,
+    default: true
+  },
   // Facilities
   bathrooms: { type: Boolean, default: false },
   changingRooms: { type: Boolean, default: false },

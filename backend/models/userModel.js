@@ -65,11 +65,15 @@ const userSchema = new mongoose.Schema(
     },
     active: {
       type: Boolean,
-      default: true,
+      default: true
     },
     deletedAt: {
       type: Date,
       default: null
+    },
+    permanentlyDeleted: {
+      type: Boolean,
+      default: false
     }
   },
   { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }

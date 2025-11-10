@@ -13,6 +13,8 @@ const AppError = require('./utils/appError');
 const globelErrorHandler = require('./controllers/errorController');
 const userRouter = require('./routes/userRouters');
 const authRouter = require('./routes/authRouters');
+const adminRoutes = require('./routes/adminRoutes');
+const ownerRoutes = require('./routes/ownerRoutes');
 const ownerRequestRouter = require('./routes/ownerRequestRoutes');
 const footballFieldRoutes = require('./routes/footballFieldRoutes');
 const reservationRoutes = require('./routes/reservationRoutes');
@@ -69,6 +71,8 @@ app.use(express.static(`${__dirname}/public`));
 
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/users', userRouter);
+app.use('/api/v1/admin', adminRoutes);
+app.use('/api/v1/owner', ownerRoutes);
 app.use('/api/v1/owner-requests', ownerRequestRouter);
 app.use('/api/v1/football-fields', footballFieldRoutes);
 app.use('/api/v1/reservations', reservationRoutes);

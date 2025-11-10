@@ -1,5 +1,7 @@
 const sharp = require('sharp'); // 🟢 You need this for image resizing
 const User = require('../models/userModel');
+const FootballField = require('../models/footballFieldModel');
+const Reservation = require('../models/reservationModel');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const fs = require('fs');
@@ -94,7 +96,7 @@ exports.updateMe = catchAsync(async (req, res, next) => {
 });
 
 exports.getAllUsers = catchAsync(async (req, res, next) => {
-  const users = await User.find();
+  const users = await User.find({ active: true });
   if (!users) {
     return next(new AppError('No users found!', 404));
   }
@@ -117,19 +119,45 @@ exports.getUser = catchAsync(async (req, res, next) => {
 });
 
 exports.deleteMe = catchAsync(async (req, res, next) => {
-  await User.findByIdAndUpdate(req.user.id, {
+  const user = await User.findById(req.user.id);
+
+  if (!user) {
+    return res.status(404).json({ message: 'User not found' });
+  }
+
+  // 🧠 Cascade cleanup
+  if (user.role === 'player') {
+    await Reservation.deleteMany({ player: user._id });
+  }
+
+  if (user.role === 'owner') {
+    const fields = await FootballField.find({ ownerId: user._id });
+    const fieldIds = fields.map((f) => f._id);
+
+    await FootballField.updateMany({ ownerId: user._id }, { isActive: false });
+    await Reservation.deleteMany({
+      $or: [
+        { field: { $in: fieldIds }, status: 'active' }, // correct
+        { player: user._id, status: 'active' }
+      ]
+    });
+  }
+
+  // 🧠 Soft delete user
+  await User.findByIdAndUpdate(user._id, {
     active: false,
     deletedAt: Date.now()
   });
 
   res.status(204).json({
     status: 'success',
-    data: null
+    message:
+      'Account deactivated. You can reactivate within 30 days by logging in.'
   });
 });
 
 exports.deleteUser = catchAsync(async (req, res, next) => {
-  const user = await User.findByIdAndDelete(req.params.id);
+  const user = await User.findById(req.params.id);
 
   if (!user) {
     return res.status(404).json({
@@ -138,8 +166,28 @@ exports.deleteUser = catchAsync(async (req, res, next) => {
     });
   }
 
+  // 🧠 Cascade cleanup
+  if (user.role === 'player') {
+    await Reservation.deleteMany({ player: user._id });
+  }
+
+  if (user.role === 'owner') {
+    const fields = await FootballField.find({ owner: user._id });
+    const fieldIds = fields.map((f) => f._id);
+    await FootballField.deleteMany({ _id: { $in: fieldIds } });
+    await Reservation.deleteMany({
+      $or: [
+        { field: { $in: fieldIds }, status: 'active' },
+        { player: user._id, status: 'active' }
+      ]
+    });
+  }
+
+  // 🧠 Permanently delete
+  await User.findByIdAndDelete(user._id);
+
   res.status(204).json({
     status: 'success',
-    data: null
+    message: 'User and all related data permanently deleted.'
   });
 });
