@@ -81,7 +81,7 @@ export default function MyReservations({ user, darkMode, setDarkMode }) {
     };
 
     // ✅ Pagination
-    const reservationsPerPage = 10 ;
+    const reservationsPerPage = 10;
     const totalPages = Math.ceil(filteredReservations.length / reservationsPerPage);
     const currentReservations = filteredReservations.slice(
         (currentPage - 1) * reservationsPerPage,
@@ -232,7 +232,9 @@ export default function MyReservations({ user, darkMode, setDarkMode }) {
                                 {currentReservations.map((r) => {
                                     if (!r) return null; // prevent crashes
                                     const now = new Date();
-                                    const start = new Date(`${r.date || ""}T${r.startTime || "00:00"}`);
+                                    const dateOnly = r.date.split("T")[0];
+                                    const start = new Date(`${dateOnly}T${r.startTime}`);
+
                                     const canEdit =
                                         userRole === "admin" ||
                                         userRole === "owner" ||

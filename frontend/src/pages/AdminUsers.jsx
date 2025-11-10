@@ -14,7 +14,6 @@ export default function AdminUsers({ darkMode, setDarkMode }) {
     const [loading, setLoading] = useState(true);
     const [currentPage, setCurrentPage] = useState(1);
     const navigate = useNavigate();
-
     const usersPerPage = 5;
 
     useEffect(() => {
@@ -31,10 +30,8 @@ export default function AdminUsers({ darkMode, setDarkMode }) {
         fetchUsers();
     }, []);
 
-    // Filter non-admin users using useMemo for performance
-    const filteredUsers = useMemo(() => {
-        return users.filter((user) => user.role !== "admin");
-    }, [users]);
+    // Filter non-admin users
+    const filteredUsers = useMemo(() => users.filter((user) => user.role !== "admin"), [users]);
 
     // Pagination logic
     const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
@@ -45,11 +42,11 @@ export default function AdminUsers({ darkMode, setDarkMode }) {
     const handlePageChange = (page) => {
         if (page < 1 || page > totalPages) return;
         setCurrentPage(page);
+        window.scrollTo({ top: 0, behavior: "smooth" }); // scroll to table
     };
 
     const handleDelete = async (userId) => {
         if (!window.confirm("Are you sure you want to delete this user?")) return;
-
         try {
             await api.delete(`/users/${userId}`);
             setUsers((prev) => prev.filter((u) => u._id !== userId));
@@ -68,10 +65,7 @@ export default function AdminUsers({ darkMode, setDarkMode }) {
         );
 
     return (
-        <main
-            className={`min-h-screen p-8 transition-all duration-300 ${darkMode ? "bg-gray-900 text-gray-100" : "bg-gray-50 text-gray-800"
-                }`}
-        >
+        <main className={`min-h-screen p-8 transition-all duration-300 ${darkMode ? "bg-gray-900 text-gray-100" : "bg-gray-50 text-gray-800"}`}>
             {/* Header */}
             <motion.div
                 className="flex justify-between items-center mb-8"
@@ -81,18 +75,14 @@ export default function AdminUsers({ darkMode, setDarkMode }) {
             >
                 <Button
                     onClick={() => navigate("/dashboard")}
-                    className={`flex items-center gap-2 px-4 rounded-full shadow-md bg-gradient-to-r from-green-600 to-green-700 text-white`}
+                    className="flex items-center gap-2 px-4 rounded-full shadow-md bg-gradient-to-r from-green-600 to-green-700 text-white"
                 >
-                    <ArrowLeft size={18} />
-                    Back to Dashboard
+                    <ArrowLeft size={18} /> Back to Dashboard
                 </Button>
 
                 <Button
                     onClick={() => setDarkMode(!darkMode)}
-                    className={`rounded-full shadow-md transition-all ${darkMode
-                        ? "bg-gradient-to-br from-yellow-400 to-orange-500 text-white"
-                        : "bg-gradient-to-br from-gray-800 to-gray-900 text-yellow-300"
-                        }`}
+                    className={`rounded-full shadow-md transition-all ${darkMode ? "bg-gradient-to-br from-yellow-400 to-orange-500 text-white" : "bg-gradient-to-br from-gray-800 to-gray-900 text-yellow-300"}`}
                 >
                     {darkMode ? <Sun size={22} /> : <Moon size={22} />}
                 </Button>
@@ -110,8 +100,7 @@ export default function AdminUsers({ darkMode, setDarkMode }) {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.4 }}
-                    className={`flex flex-col text-center items-center py-20 rounded-xl shadow-md ${darkMode ? "bg-gray-800" : "bg-white"
-                        }`}
+                    className={`flex flex-col text-center items-center py-20 rounded-xl shadow-md ${darkMode ? "bg-gray-800" : "bg-white"}`}
                 >
                     <Lottie animationData={noUsers} loop className="w-48 h-48" />
                     <p className="text-lg font-bold opacity-70">No users found yet.</p>
@@ -125,22 +114,10 @@ export default function AdminUsers({ darkMode, setDarkMode }) {
             ) : (
                 <>
                     {/* Users Table */}
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        className="overflow-x-auto rounded-2xl shadow-md"
-                    >
-                        <table
-                            className={`w-full border-collapse ${darkMode ? "bg-gray-800 text-gray-200" : "bg-white"
-                                }`}
-                        >
+                    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="overflow-x-auto rounded-2xl shadow-md">
+                        <table className={`w-full border-collapse ${darkMode ? "bg-gray-800 text-gray-200" : "bg-white"}`}>
                             <thead>
-                                <tr
-                                    className={`text-left text-sm uppercase ${darkMode
-                                        ? "bg-gray-700 text-green-400"
-                                        : "bg-gray-200 text-green-600"
-                                        }`}
-                                >
+                                <tr className={`text-left text-sm uppercase ${darkMode ? "bg-gray-700 text-green-400" : "bg-gray-200 text-green-600"}`}>
                                     <th className="p-4">#</th>
                                     <th className="p-4">Name</th>
                                     <th className="p-4">Email</th>
@@ -156,34 +133,16 @@ export default function AdminUsers({ darkMode, setDarkMode }) {
                                         initial={{ opacity: 0, y: 10 }}
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ delay: i * 0.05 }}
-                                        className={`border-b ${darkMode
-                                            ? "border-gray-700 hover:bg-gray-600"
-                                            : "border-gray-200 hover:bg-gray-100"
-                                            }`}
+                                        className={`border-b ${darkMode ? "border-gray-700 hover:bg-gray-600" : "border-gray-200 hover:bg-gray-100"}`}
                                     >
                                         <td className="p-4 font-semibold">{indexOfFirst + i + 1}</td>
                                         <td className="p-4">{`${user.firstName} ${user.lastName}`}</td>
                                         <td className="p-4">{user.email}</td>
-                                        <td
-                                            className={`p-4 capitalize font-bold ${user.role === "owner"
-                                                ? darkMode
-                                                    ? "text-yellow-400"
-                                                    : "text-yellow-600"
-                                                : darkMode
-                                                    ? "text-green-400"
-                                                    : "text-green-600"
-                                                }`}
-                                        >
+                                        <td className={`p-4 capitalize font-bold ${user.role === "owner" ? (darkMode ? "text-yellow-400" : "text-yellow-600") : (darkMode ? "text-green-400" : "text-green-600")}`}>
                                             {user.role}
                                         </td>
                                         <td className="p-4">
-                                            {user.createdAt
-                                                ? new Date(user.createdAt).toLocaleDateString("en-US", {
-                                                    year: "numeric",
-                                                    month: "short",
-                                                    day: "numeric",
-                                                })
-                                                : "—"}
+                                            {user.createdAt ? new Date(user.createdAt).toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" }) : "—"}
                                         </td>
                                         <td>
                                             <Button
@@ -199,14 +158,10 @@ export default function AdminUsers({ darkMode, setDarkMode }) {
                         </table>
                     </motion.div>
 
-                    {/* Centered Pagination */}
-                    <motion.div className="fixed bottom-6 left-1/2 transform -translate-x-1/2">
-                        <Pagination
-                            currentPage={currentPage}
-                            totalPages={totalPages}
-                            onPageChange={handlePageChange}
-                        />
-                    </motion.div>
+                    {/* Pagination */}
+                    <div className="flex justify-center mt-6">
+                        <Pagination currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
+                    </div>
                 </>
             )}
         </main>
