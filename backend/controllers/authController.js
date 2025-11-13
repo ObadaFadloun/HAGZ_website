@@ -2,7 +2,7 @@ const crypto = require('crypto');
 const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
 const User = require('../models/userModel');
-const FootballField = require('../models/footballFieldModel')
+const FootballField = require('../models/footballFieldModel');
 const catchAsync = require('../utils/catchAsync');
 const sendEmail = require('../utils/email');
 
@@ -54,6 +54,26 @@ exports.register = catchAsync(async (req, res) => {
     });
   }
 
+  // 🧠 Check if email already exists
+  const existingUser = await User.findOne({ email });
+
+  if (existingUser) {
+    if (existingUser.isBlocked) {
+      // 🚫 Blocked by admin
+      return res.status(403).json({
+        status: 'fail',
+        message: 'This email has been permanently blocked by admin.'
+      });
+    }
+
+    // 📩 Normal email already registered
+    return res.status(400).json({
+      status: 'fail',
+      message: 'Email already in use. Please log in instead.'
+    });
+  }
+
+  // 🆕 Create new user
   const user = await User.create({
     firstName,
     lastName,
@@ -76,6 +96,16 @@ exports.login = catchAsync(async (req, res) => {
   }
 
   const user = await User.findOne({ email }).select('+password');
+
+  // 🚫 1. Check if blocked by admin
+  if (user && user.isBlocked) {
+    return res.status(403).json({
+      status: 'fail',
+      message: 'This account has been permanently blocked by admin.'
+    });
+  }
+
+  // ⚠️ 2. Invalid credentials
   if (!user || !(await user.checkPassword(password, user.password))) {
     return res.status(401).json({
       status: 'fail',
@@ -83,6 +113,7 @@ exports.login = catchAsync(async (req, res) => {
     });
   }
 
+  // 🔄 3. Handle deactivated (soft-deleted) accounts
   if (!user.active && user.deletedAt) {
     const diffInDays =
       (Date.now() - new Date(user.deletedAt).getTime()) / (1000 * 60 * 60 * 24);
@@ -103,12 +134,12 @@ exports.login = catchAsync(async (req, res) => {
       });
     }
 
-    // Reactivate account
+    // ♻️ Reactivate account
     user.active = true;
     user.deletedAt = null;
     await user.save({ validateBeforeSave: false });
 
-    // If user is an owner, recover all their football fields
+    // ⚽ If owner → restore football fields
     if (user.role === 'owner') {
       await FootballField.updateMany(
         { ownerId: user._id },
@@ -117,6 +148,7 @@ exports.login = catchAsync(async (req, res) => {
     }
   }
 
+  // ✅ 4. Success — send token
   createSendToken(user, 200, res);
 });
 

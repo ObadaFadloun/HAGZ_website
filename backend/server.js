@@ -2,7 +2,9 @@ const mongoose = require('mongoose');
 const app = require('./app');
 
 (async () => {
-  const { autoCompleteReservations } = await import("./utils/autoCompleteReservations.mjs");
+  const { autoCompleteReservations } = await import(
+    './utils/autoCompleteReservations.mjs'
+  );
   autoCompleteReservations();
 })();
 

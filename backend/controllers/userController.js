@@ -156,38 +156,42 @@ exports.deleteMe = catchAsync(async (req, res, next) => {
   });
 });
 
-exports.deleteUser = catchAsync(async (req, res, next) => {
+exports.deleteUser = catchAsync(async (req, res) => {
   const user = await User.findById(req.params.id);
 
   if (!user) {
     return res.status(404).json({
       status: 'fail',
-      message: 'User not found'
+      message: 'User not found',
     });
   }
 
-  // 🧠 Cascade cleanup
+  // Cascade cleanup (same as before)
   if (user.role === 'player') {
     await Reservation.deleteMany({ player: user._id });
   }
 
   if (user.role === 'owner') {
-    const fields = await FootballField.find({ owner: user._id });
+    const fields = await FootballField.find({ ownerId: user._id });
     const fieldIds = fields.map((f) => f._id);
+
     await FootballField.deleteMany({ _id: { $in: fieldIds } });
     await Reservation.deleteMany({
       $or: [
         { field: { $in: fieldIds }, status: 'active' },
-        { player: user._id, status: 'active' }
-      ]
+        { player: user._id, status: 'active' },
+      ],
     });
   }
 
-  // 🧠 Permanently delete
-  await User.findByIdAndDelete(user._id);
+  // 🚫 Instead of deleting — block the user
+  user.isBlocked = true;
+  user.active = false;
+  user.deletedAt = Date.now();
+  await user.save({ validateBeforeSave: false });
 
   res.status(204).json({
     status: 'success',
-    message: 'User and all related data permanently deleted.'
+    message: 'User has been blocked and all related data removed.',
   });
 });

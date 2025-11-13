@@ -74,7 +74,8 @@ const userSchema = new mongoose.Schema(
     permanentlyDeleted: {
       type: Boolean,
       default: false
-    }
+    },
+    isBlocked: { type: Boolean, default: false }
   },
   { timestamps: true, toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
