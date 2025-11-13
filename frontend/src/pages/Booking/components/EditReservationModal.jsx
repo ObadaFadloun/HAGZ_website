@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import api from "../../../utils/api";
 import Button from "../../../components/Button";
+import AlertModal from "../../../components/AlertModal";
 
 export default function EditReservationModal({
     user,
@@ -16,9 +17,30 @@ export default function EditReservationModal({
     const [saving, setSaving] = useState(false);
     const [slotsList, setSlotsList] = useState([]);
 
+    const [alert, setAlert] = useState({ show: false, message: "", onConfirm: null });
+
+    const showAlert = (message, onConfirm = null) => {
+        setAlert({ show: true, message, onConfirm });
+    };
+
+    const closeAlert = () => {
+        setAlert({ show: false, message: "", onConfirm: null });
+    };
+
     // 🔹 Fetch available slots (includes status: active, completed, cancelled, available)
     const fetchAvailableSlots = async (date) => {
-        if (!reservation?.field?._id) return;
+        // ✅ Better safety checks
+        if (!reservation || !reservation.field || !reservation.field._id) {
+            console.warn('Cannot fetch slots: Missing reservation data');
+            return;
+        }
+
+        // ✅ Check if user exists
+        if (!user || !user._id) {
+            console.warn('Cannot fetch slots: Missing user data');
+            return;
+        }
+
         try {
             const res = await api.get(
                 `/football-fields/${reservation.field._id}/available-slots`,
@@ -26,32 +48,37 @@ export default function EditReservationModal({
             );
             setSlotsList(res.data.slots || []);
         } catch (err) {
-            console.error(err);
-            alert("Failed to load available slots");
+            console.error('Failed to fetch slots:', err);
+            showAlert("Failed to load available slots");
         }
     };
 
 
-    // ✅ Sync modal date with reservation (fixes date not showing issue)
+    /// ✅ Sync modal date with reservation (with safety checks)
     useEffect(() => {
-        if (reservation) {
+        if (reservation && reservation.field && reservation.field._id) {
             const formattedDate = reservation.date
                 ? reservation.date.slice(0, 10)
                 : "";
             setNewDate(formattedDate);
             setSelectedSlot(null);
-            if (formattedDate) fetchAvailableSlots(formattedDate);
+
+            if (formattedDate && user && user._id) {
+                fetchAvailableSlots(formattedDate);
+            }
         }
     }, [reservation, show]);
 
-    // 🔹 Auto-refresh slots every 15s in case another player cancels
+    // ✅ Auto-refresh slots every 15s (with safety checks)
     useEffect(() => {
-        if (!newDate) return;
+        if (!newDate || !reservation?.field?._id || !user?._id) return;
+
         const interval = setInterval(() => {
             fetchAvailableSlots(newDate);
         }, 15000);
+
         return () => clearInterval(interval);
-    }, [newDate]);
+    }, [newDate, reservation, user]);
 
     // 🔹 Only allow editing if more than 2 hours before start time
     const canEdit = () => {
@@ -66,36 +93,34 @@ export default function EditReservationModal({
         }
 
         const resStartStr = `${datePart}T${reservation.startTime.length === 5
-                ? reservation.startTime + ":00"
-                : reservation.startTime
+            ? reservation.startTime + ":00"
+            : reservation.startTime
             }`;
 
         const resStart = new Date(resStartStr);
 
         if (isNaN(resStart)) {
-            console.log("Invalid date after fix:", resStartStr);
             return false;
         }
 
         const diffHours = (resStart - now) / (1000 * 60 * 60);
-        console.log({ now, resStart, diffHours });
 
         return diffHours > 2;
     };
 
     const handleSave = async () => {
         if (!canEdit()) {
-            alert("You cannot edit a reservation within 2 hours of start time.");
+            showAlert("You cannot edit a reservation within 2 hours of start time.");
             return;
         }
 
         if (new Date(newDate) < new Date().setHours(0, 0, 0, 0)) {
-            alert("You cannot select a past date.");
+            showAlert("You cannot select a past date.");
             return;
         }
 
         if (!selectedSlot) {
-            alert("Please select a new slot before saving.");
+            showAlert("Please select a new slot before saving.");
             return;
         }
 
@@ -111,17 +136,20 @@ export default function EditReservationModal({
             onClose();
         } catch (err) {
             console.error(err);
-            alert(err.response?.data?.message || "Update failed");
+            showAlert(err.response?.data?.message || "Update failed");
         } finally {
             setSaving(false);
         }
     };
 
     const handleCancel = () => {
-        const confirmClose = window.confirm(
-            "Are you sure you want to close without saving?"
+        showAlert(
+            "Are you sure you want to close without saving?",
+            () => {
+                onClose();
+                closeAlert();
+            }
         );
-        if (confirmClose) onClose();
     };
 
     if (!show) return null;
@@ -220,6 +248,15 @@ export default function EditReservationModal({
                     </motion.div>
                 </motion.div>
             )}
+
+            {/* Alert Modal */}
+            <AlertModal
+                show={alert.show}
+                message={alert.message}
+                onClose={closeAlert}
+                onConfirm={alert.onConfirm || closeAlert}
+                darkMode={darkMode}
+            />
         </AnimatePresence>
     );
 }

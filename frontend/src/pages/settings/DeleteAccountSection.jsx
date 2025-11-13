@@ -3,36 +3,66 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, ChevronUp, Trash2 } from "lucide-react";
 import api from "../../utils/api";
 import Button from "../../components/Button";
+import AlertModal from "../../components/AlertModal";
 
 export default function DeleteAccountSection({ user, setUser, darkMode }) {
   const [dangerZoneOpen, setDangerZoneOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  // ✅ Alert state
+  const [alert, setAlert] = useState({
+    show: false,
+    message: "",
+    onConfirm: null,
+    title: "Notification"
+  });
+
+  const showAlert = (message, onConfirm = null, title = "Notification") => {
+    setAlert({ show: true, message, onConfirm, title });
+  };
+
+  const closeAlert = () => {
+    setAlert({ show: false, message: "", onConfirm: null, title: "Notification" });
+  };
+
+  const showNotification = (message, title = "Notification") => {
+    setAlert({ show: true, message, onConfirm: null, title });
+  };
+
   const handleDelete = async () => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete your account? This action cannot be undone."
+    showAlert(
+      "Are you sure you want to delete your account? This action cannot be undone.",
+      async () => {
+        try {
+          setLoading(true);
+          const res = await api.delete("/users/delete-me");
+
+          if (res.status === 204) {
+            // ✅ Clear local storage and redirect immediately after successful deletion
+            localStorage.removeItem("token");
+            localStorage.removeItem("user");
+            setUser(null);
+            
+            // ✅ Show success message briefly, then redirect
+            showNotification("Your account has been deleted successfully.", "Account Deleted");
+            
+            // ✅ Redirect after user sees the success message
+            setTimeout(() => {
+              window.location.href = "/auth";
+            }, 1500);
+            
+          } else {
+            showNotification("Something went wrong. Please try again later.", "Error");
+          }
+        } catch (err) {
+          console.error(err);
+          showNotification(err.response?.data?.message || "Failed to delete account.", "Error");
+        } finally {
+          setLoading(false);
+        }
+      },
+      "Confirm Account Deletion"
     );
-    if (!confirmDelete) return;
-
-    try {
-      setLoading(true);
-      const res = await api.delete("/users/delete-me");
-
-      if (res.status === 204) {
-        alert("Your account has been deleted successfully.");
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-        setUser(null);
-        window.location.href = "/auth";
-      } else {
-        alert("Something went wrong. Please try again later.");
-      }
-    } catch (err) {
-      console.error(err);
-      alert(err.response?.data?.message || "Failed to delete account.");
-    } finally {
-      setLoading(false);
-    }
   };
 
   return (
@@ -78,6 +108,16 @@ export default function DeleteAccountSection({ user, setUser, darkMode }) {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* ✅ Alert Modal */}
+      <AlertModal
+        show={alert.show}
+        message={alert.message}
+        title={alert.title}
+        onClose={closeAlert}
+        onConfirm={alert.onConfirm}
+        darkMode={darkMode}
+      />
     </motion.div>
   );
 }

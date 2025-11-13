@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight, Star, ThumbsUp, ThumbsDown } from "lucide-react";
 import Button from "../../../components/Button";
+import AlertModal from "../../../components/AlertModal";
 
 const ReviewsSection = ({
     reviews = [],
@@ -19,6 +20,21 @@ const ReviewsSection = ({
     const [favorite, setFavorite] = useState(isFavorite);
     const [submitting, setSubmitting] = useState(false);
 
+    const [alert, setAlert] = useState({
+        show: false,
+        message: "",
+        onConfirm: null,
+        title: "Notification"
+    });
+
+    const showAlert = (message, onConfirm = null, title = "Notification") => {
+        setAlert({ show: true, message, onConfirm, title });
+    };
+
+    const closeAlert = () => {
+        setAlert({ show: false, message: "", onConfirm: null, title: "Notification" });
+    };
+
     const nextReview = () => {
         if (reviews.length > 0) {
             setReviewIndex((prev) => (prev + 1) % reviews.length);
@@ -32,7 +48,11 @@ const ReviewsSection = ({
     };
 
     const handleAddComment = async () => {
-        if (!commentText.trim()) return alert("Please write a comment first!");
+        if (!commentText.trim()) {
+            showAlert("Please write a comment first!");
+            return;
+        }
+        
         setSubmitting(true);
         await onAddComment?.({ text: commentText, rating });
         setSubmitting(false);
@@ -196,6 +216,16 @@ const ReviewsSection = ({
                     </Button>
                 </div>
             </div>
+
+            {/* Alert Modal */}
+            <AlertModal
+                show={alert.show}
+                message={alert.message}
+                title={alert.title}
+                onClose={closeAlert}
+                // No onConfirm prop = shows OK button only
+                darkMode={darkMode}
+            />
         </motion.div>
     );
 };

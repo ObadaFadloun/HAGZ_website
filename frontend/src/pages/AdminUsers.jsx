@@ -8,6 +8,7 @@ import loadingLottie from "../assets/loading.json";
 import noUsers from "../assets/EmptyState.json";
 import Button from "../components/Button";
 import Pagination from "../components/Pagination";
+import AlertModal from "../components/AlertModal";
 
 export default function AdminUsers({ darkMode, setDarkMode }) {
     const [users, setUsers] = useState([]);
@@ -16,6 +17,26 @@ export default function AdminUsers({ darkMode, setDarkMode }) {
     const navigate = useNavigate();
     const usersPerPage = 5;
 
+    // ✅ Alert state
+    const [alert, setAlert] = useState({
+        show: false,
+        message: "",
+        onConfirm: null,
+        title: "Notification"
+    });
+
+    const showAlert = (message, onConfirm = null, title = "Notification") => {
+        setAlert({ show: true, message, onConfirm, title });
+    };
+
+    const closeAlert = () => {
+        setAlert({ show: false, message: "", onConfirm: null, title: "Notification" });
+    };
+
+    const showNotification = (message, title = "Notification") => {
+        setAlert({ show: true, message, onConfirm: null, title });
+    };
+
     useEffect(() => {
         const fetchUsers = async () => {
             try {
@@ -23,6 +44,7 @@ export default function AdminUsers({ darkMode, setDarkMode }) {
                 setUsers(res.data.data.users);
             } catch (err) {
                 console.error(err);
+                showNotification("Failed to load users", "Error");
             } finally {
                 setLoading(false);
             }
@@ -46,15 +68,20 @@ export default function AdminUsers({ darkMode, setDarkMode }) {
     };
 
     const handleDelete = async (userId) => {
-        if (!window.confirm("Are you sure you want to delete this user?")) return;
-        try {
-            await api.delete(`/users/${userId}`);
-            setUsers((prev) => prev.filter((u) => u._id !== userId));
-            alert("User deleted successfully ✅");
-        } catch (err) {
-            console.error(err);
-            alert("Failed to delete user ❌");
-        }
+        showAlert(
+            "Are you sure you want to delete this user?",
+            async () => {
+                try {
+                    await api.delete(`/users/${userId}`);
+                    setUsers((prev) => prev.filter((u) => u._id !== userId));
+                    showNotification("User deleted successfully ✅", "Success");
+                } catch (err) {
+                    console.error(err);
+                    showNotification("Failed to delete user ❌", "Error");
+                }
+            },
+            "Confirm User Deletion"
+        );
     };
 
     if (loading)
@@ -149,7 +176,7 @@ export default function AdminUsers({ darkMode, setDarkMode }) {
                                                 onClick={() => handleDelete(user._id)}
                                                 className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-md"
                                             >
-                                                Delete
+                                                Block
                                             </Button>
                                         </td>
                                     </motion.tr>
@@ -164,6 +191,16 @@ export default function AdminUsers({ darkMode, setDarkMode }) {
                     </div>
                 </>
             )}
+
+            {/* ✅ Alert Modal */}
+            <AlertModal
+                show={alert.show}
+                message={alert.message}
+                title={alert.title}
+                onClose={closeAlert}
+                onConfirm={alert.onConfirm}
+                darkMode={darkMode}
+            />
         </main>
     );
 }

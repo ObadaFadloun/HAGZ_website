@@ -13,6 +13,7 @@ import FacilitiesCard from "./components/FacilitiesCard";
 import SlotsList from "./components/SlotsList";
 import DateSelector from "./components/DateSelector";
 import ReviewsSection from "./components/ReviewsSection";
+import AlertModal from "../../components/AlertModal";
 
 export default function BookingPage({ user, darkMode, setDarkMode, onBooked }) {
     const navigate = useNavigate();
@@ -32,6 +33,21 @@ export default function BookingPage({ user, darkMode, setDarkMode, onBooked }) {
 
     const [reviews, setReviews] = useState([]);
     const [loadingReviews, setLoadingReviews] = useState(true);
+
+    const [alert, setAlert] = useState({
+        show: false,
+        message: "",
+        onConfirm: null,
+        title: "Notification"
+    });
+
+    const showAlert = (message, onConfirm = null, title = "Notification") => {
+        setAlert({ show: true, message, onConfirm, title });
+    };
+
+    const closeAlert = () => {
+        setAlert({ show: false, message: "", onConfirm: null, title: "Notification" });
+    };
 
     const fetchField = async () => {
         try {
@@ -162,7 +178,10 @@ export default function BookingPage({ user, darkMode, setDarkMode, onBooked }) {
     }, [field, selectedDate, BookedSlots]);
 
     const handleBook = async () => {
-        if (!selectedSlot) return alert("Please pick a slot first");
+        if (!selectedSlot) {
+            showAlert("Please pick a slot first");
+            return;
+        }
 
         const [startTime, endTime] = selectedSlot.label.split(" - ");
         const now = new Date();
@@ -170,13 +189,15 @@ export default function BookingPage({ user, darkMode, setDarkMode, onBooked }) {
         const chosenDate = selectedDate;
 
         if (new Date(chosenDate) < new Date(now.toDateString())) {
-            return alert("You cannot book a past date.");
+            showAlert("You cannot book a past date.");
+            return;
         }
 
         if (chosenDate === todayStr) {
             const startHour = parseInt(startTime.split(":")[0], 10);
             if (startHour <= now.getHours()) {
-                return alert("You cannot book a past hour today.");
+                showAlert("You cannot book a past hour today.");
+                return;
             }
         }
 
@@ -198,10 +219,10 @@ export default function BookingPage({ user, darkMode, setDarkMode, onBooked }) {
             await fetchReservationsForField();
 
             onBooked?.(res.data);
-            alert("✅ Booked successfully!");
+            showAlert("✅ Booked successfully!");
         } catch (err) {
             console.error(err);
-            alert(err.response?.data?.message || "Booking failed");
+            showAlert(err.response?.data?.message || "Booking failed");
         }
     };
 
@@ -217,19 +238,24 @@ export default function BookingPage({ user, darkMode, setDarkMode, onBooked }) {
 
             await fetchField();
         } catch (err) {
-            alert(err.response?.data?.message || "Failed to add review");
+            showAlert(err.response?.data?.message || "Failed to add review");
         }
     };
 
     const handleDeleteReview = async (reviewId) => {
-        if (!window.confirm("Are you sure you want to delete this review?")) return;
-        try {
-            await api.delete(`/reviews/${reviewId}`);
-            setReviews((prev) => prev.filter((r) => r._id !== reviewId));
-            alert("Review deleted successfully ✅");
-        } catch (err) {
-            alert(err.response?.data?.message || "Failed to delete review");
-        }
+        showAlert(
+            "Are you sure you want to delete this review?",
+            async () => {
+                try {
+                    await api.delete(`/reviews/${reviewId}`);
+                    setReviews((prev) => prev.filter((r) => r._id !== reviewId));
+                    showAlert("Review deleted successfully ✅");
+                } catch (err) {
+                    showAlert(err.response?.data?.message || "Failed to delete review");
+                }
+            },
+            "Confirm Deletion"
+        );
     };
 
     if (loading) return <LoadingScreen darkMode={darkMode} />;
@@ -321,6 +347,15 @@ export default function BookingPage({ user, darkMode, setDarkMode, onBooked }) {
                     />
                 </motion.aside>
             </motion.section>
+
+            {/* ✅ Alert Modal */}
+            <AlertModal
+                show={alert.show}
+                message={alert.message}
+                title={alert.title}
+                onClose={closeAlert}
+                darkMode={darkMode}
+            />
         </motion.main>
     );
 }

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import Button from "../../components/Button";
+import AlertModal from "../../components/AlertModal";
 import api from "../../utils/api";
 import FieldFormSection from "./components/FieldFormSection";
 import FieldFacilities from "./components/FieldFacilities";
@@ -45,6 +46,27 @@ export default function FieldForm({
     const [errors, setErrors] = useState(null);
     const inputRef = useRef(null);
     const [previews, setPreviews] = useState([]);
+
+    // ✅ Alert state
+    const [alert, setAlert] = useState({
+        show: false,
+        message: "",
+        onConfirm: null,
+        title: "Notification"
+    });
+
+    const showAlert = (message, onConfirm = null, title = "Notification") => {
+        setAlert({ show: true, message, onConfirm, title });
+    };
+
+    const closeAlert = () => {
+        setAlert({ show: false, message: "", onConfirm: null, title: "Notification" });
+    };
+
+    // ✅ Simple notification function
+    const showNotification = (message, title = "Notification") => {
+        setAlert({ show: true, message, onConfirm: null, title });
+    };
 
     // 🧩 Update form when editing
     useEffect(() => {
@@ -163,17 +185,28 @@ export default function FieldForm({
                     headers: { "Content-Type": "multipart/form-data" },
                 });
                 onUpdated?.(res.data.data);
+
+                showNotification("Field updated successfully!", "Success");
+
+                setTimeout(() => {
+                    setShowModal(false);
+                }, 1000);
+
             } else {
                 res = await api.post(`/football-fields`, formData, {
                     headers: { "Content-Type": "multipart/form-data" },
                 });
                 onAdded?.(res.data.data);
-            }
 
-            setShowModal(false);
+                showNotification("Field added successfully!", "Success");
+
+                setTimeout(() => {
+                    setShowModal(false);
+                }, 1000);
+            }
         } catch (err) {
             console.error("❌ Failed to submit field:", err);
-            alert(err.response?.data?.message || "Something went wrong.");
+            showNotification(err.response?.data?.message || "Something went wrong.", "Error");
         } finally {
             setSubmitting(false);
         }
@@ -296,6 +329,15 @@ export default function FieldForm({
                     </Button>
                 </div>
             </form>
+
+            <AlertModal
+                show={alert.show}
+                message={alert.message}
+                title={alert.title}
+                onClose={closeAlert}
+                onConfirm={alert.onConfirm}
+                darkMode={darkMode}
+            />
         </motion.div>
     );
 }

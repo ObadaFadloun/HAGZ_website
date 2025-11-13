@@ -2,12 +2,33 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, ChevronUp, Crown } from "lucide-react";
 import Button from "../../components/Button";
+import AlertModal from "../../components/AlertModal";
 import api from "../../utils/api";
 
 export default function BecomeOwnerSection({ user, setUser, darkMode }) {
   const [becomeOwnerOpen, setBecomeOwnerOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [requested, setRequested] = useState(user?.ownerRequestStatus === "pending");
+
+  // ✅ Alert state
+  const [alert, setAlert] = useState({
+    show: false,
+    message: "",
+    onConfirm: null,
+    title: "Notification"
+  });
+
+  const showAlert = (message, onConfirm = null, title = "Notification") => {
+    setAlert({ show: true, message, onConfirm, title });
+  };
+
+  const closeAlert = () => {
+    setAlert({ show: false, message: "", onConfirm: null, title: "Notification" });
+  };
+
+  const showNotification = (message, title = "Notification") => {
+    setAlert({ show: true, message, onConfirm: null, title });
+  };
 
   const handleRequest = async () => {
     if (requested) return;
@@ -17,7 +38,7 @@ export default function BecomeOwnerSection({ user, setUser, darkMode }) {
       const res = await api.post("/owner-requests/become-owner");
 
       if (res.data.status === "success") {
-        alert("Your request to become an owner has been sent!");
+        showNotification("Your request to become an owner has been sent!", "Success");
 
         const newUser = res.data.user;
         localStorage.setItem("user", JSON.stringify(newUser));
@@ -25,13 +46,14 @@ export default function BecomeOwnerSection({ user, setUser, darkMode }) {
         setRequested(newUser.ownerRequestStatus === "pending");
         setBecomeOwnerOpen(false);
       } else {
-        alert("Something went wrong. Try again later.");
+        showNotification("Something went wrong. Try again later.", "Error");
       }
     } catch (err) {
       console.error(err);
-      alert(
+      showNotification(
         err.response?.data?.message ||
-        "Failed to send request. Please try again later."
+        "Failed to send request. Please try again later.",
+        "Error"
       );
     } finally {
       setLoading(false);
@@ -89,6 +111,16 @@ export default function BecomeOwnerSection({ user, setUser, darkMode }) {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* ✅ Alert Modal */}
+      <AlertModal
+        show={alert.show}
+        message={alert.message}
+        title={alert.title}
+        onClose={closeAlert}
+        onConfirm={alert.onConfirm}
+        darkMode={darkMode}
+      />
     </motion.div>
   );
 }

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, ChevronUp, Lock } from "lucide-react";
 import Button from "../../components/Button";
+import AlertModal from "../../components/AlertModal";
 import api from "../../utils/api";
 
 export default function ChangePasswordSection({ darkMode }) {
@@ -13,6 +14,26 @@ export default function ChangePasswordSection({ darkMode }) {
   });
   const [loading, setLoading] = useState(false);
 
+  // ✅ Alert state
+  const [alert, setAlert] = useState({
+    show: false,
+    message: "",
+    onConfirm: null,
+    title: "Notification"
+  });
+
+  const showAlert = (message, onConfirm = null, title = "Notification") => {
+    setAlert({ show: true, message, onConfirm, title });
+  };
+
+  const closeAlert = () => {
+    setAlert({ show: false, message: "", onConfirm: null, title: "Notification" });
+  };
+
+  const showNotification = (message, title = "Notification") => {
+    setAlert({ show: true, message, onConfirm: null, title });
+  };
+
   const handleChange = (e) => {
     setFormData({
       ...formData,
@@ -22,18 +43,18 @@ export default function ChangePasswordSection({ darkMode }) {
 
   const handleChangePassword = async () => {
     if (!formData.currentPassword || !formData.newPassword || !formData.confirmPassword) {
-      alert("Please fill in all fields");
+      showNotification("Please fill in all fields", "Validation Error");
       return;
     }
 
     if (formData.newPassword !== formData.confirmPassword) {
-      alert("New passwords do not match");
+      showNotification("New passwords do not match", "Validation Error");
       return;
     }
 
     try {
       setLoading(true);
-      const res = await api.patch("/users/updateMyPassword", {
+      const res = await api.patch("/users/update-my-password", {
         passwordCurrent: formData.currentPassword,
         password: formData.newPassword,
         confirmPassword: formData.confirmPassword,
@@ -41,15 +62,21 @@ export default function ChangePasswordSection({ darkMode }) {
 
       // ✅ Update token and reload to refresh auth state
       localStorage.setItem("token", res.data.token);
-      alert("Password updated successfully!");
+      showNotification("Password updated successfully!", "Success");
       setFormData({ currentPassword: "", newPassword: "", confirmPassword: "" });
       setChangePasswordOpen(false);
-      window.location.reload();
+
+      // ✅ Reload after user sees the success message
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
+
     } catch (err) {
       console.error(err);
-      alert(
+      showNotification(
         err.response?.data?.message ||
-        "Failed to update password. Please check your current password."
+        "Failed to update password. Please check your current password.",
+        "Error"
       );
     } finally {
       setLoading(false);
@@ -85,8 +112,8 @@ export default function ChangePasswordSection({ darkMode }) {
               onChange={handleChange}
               placeholder="Current Password"
               className={`w-full p-3 rounded-lg border ${darkMode
-                  ? "bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400"
-                  : "bg-gray-50 border-gray-300 text-gray-800"
+                ? "bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400"
+                : "bg-gray-50 border-gray-300 text-gray-800"
                 }`}
             />
             <input
@@ -96,8 +123,8 @@ export default function ChangePasswordSection({ darkMode }) {
               onChange={handleChange}
               placeholder="New Password"
               className={`w-full p-3 rounded-lg border ${darkMode
-                  ? "bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400"
-                  : "bg-gray-50 border-gray-300 text-gray-800"
+                ? "bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400"
+                : "bg-gray-50 border-gray-300 text-gray-800"
                 }`}
             />
             <input
@@ -107,8 +134,8 @@ export default function ChangePasswordSection({ darkMode }) {
               onChange={handleChange}
               placeholder="Confirm New Password"
               className={`w-full p-3 rounded-lg border ${darkMode
-                  ? "bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400"
-                  : "bg-gray-50 border-gray-300 text-gray-800"
+                ? "bg-gray-700 border-gray-600 text-gray-100 placeholder-gray-400"
+                : "bg-gray-50 border-gray-300 text-gray-800"
                 }`}
             />
 
@@ -123,6 +150,16 @@ export default function ChangePasswordSection({ darkMode }) {
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* ✅ Alert Modal */}
+      <AlertModal
+        show={alert.show}
+        message={alert.message}
+        title={alert.title}
+        onClose={closeAlert}
+        onConfirm={alert.onConfirm}
+        darkMode={darkMode}
+      />
     </motion.div>
   );
 }

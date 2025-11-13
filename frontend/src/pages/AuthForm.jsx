@@ -5,6 +5,7 @@ import { Sun, Moon } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import Button from "../components/Button";
+import AlertModal from "../components/AlertModal";
 import api from "../utils/api";
 
 function AuthForm({ onAuth, initialMode = "login", darkMode, setDarkMode }) {
@@ -14,6 +15,26 @@ function AuthForm({ onAuth, initialMode = "login", darkMode, setDarkMode }) {
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+
+    // ✅ Alert state
+    const [alert, setAlert] = useState({
+        show: false,
+        message: "",
+        onConfirm: null,
+        title: "Notification"
+    });
+
+    const showAlert = (message, onConfirm = null, title = "Notification") => {
+        setAlert({ show: true, message, onConfirm, title });
+    };
+
+    const closeAlert = () => {
+        setAlert({ show: false, message: "", onConfirm: null, title: "Notification" });
+    };
+
+    const showNotification = (message, title = "Notification") => {
+        setAlert({ show: true, message, onConfirm: null, title });
+    };
 
     const [form, setForm] = useState({
         firstName: "",
@@ -63,44 +84,42 @@ function AuthForm({ onAuth, initialMode = "login", darkMode, setDarkMode }) {
             const endpoint = isSignUp ? "/auth/register" : "/auth/login";
             const res = await api.post(endpoint, form);
 
-            if (res.data.status !== "success")throw new Error("Something went wrong");
+            if (res.data.status !== "success") throw new Error("Something went wrong");
 
             onAuth(res.data);
         } catch (err) {
             console.error(err);
 
-            // ✅ [EDIT 1]: Handle inactive user reactivation confirmation
+            // ✅ Handle inactive user reactivation confirmation
             if (err.response?.data?.status === "inactive") {
+                // ✅ Use custom alert for reactivation confirmation
+                showAlert(
+                    "Your account is currently deactivated. Do you want to recover it?",
+                    async () => {
+                        try {
+                            const endpoint = isSignUp ? "/auth/register" : "/auth/login";
+                            const reactivationRes = await api.post(endpoint, {
+                                ...form,
+                                reactivate: true,
+                            });
 
-                // ✅ [EDIT 2]: Confirm BEFORE any async/await call
-                const confirmRecovery = window.confirm(
-                    "Your account is currently deactivated. Do you want to recover it?"
+                            showNotification("✅ Your account has been successfully reactivated!", "Account Reactivated");
+                            onAuth(reactivationRes.data);
+                            return;
+                        } catch (reactivationError) {
+                            console.error(reactivationError);
+                            showNotification(
+                                reactivationError.response?.data?.message || "Reactivation failed!",
+                                "Error"
+                            );
+                        }
+                    },
+                    "Account Recovery"
                 );
-
-                if (confirmRecovery) {
-                    try {
-                        const endpoint = isSignUp ? "/auth/register" : "/auth/login";
-                        const reactivationRes = await api.post(endpoint, {
-                            ...form,
-                            reactivate: true,
-                        });
-
-                        alert("✅ Your account has been successfully reactivated!");
-                        onAuth(reactivationRes.data);
-                        return;
-                    } catch (reactivationError) {
-                        console.error(reactivationError);
-                        alert(
-                            reactivationError.response?.data?.message ||
-                            "Reactivation failed!"
-                        );
-                    }
-                }
-
                 return; // ✅ Stop further execution
             }
 
-             // ✅ [EDIT 3]: Regular error message for other issues
+            // ✅ Regular error message for other issues
             setError(err.response?.data?.message || "Something went wrong ❌");
         } finally {
             setLoading(false);
@@ -388,6 +407,16 @@ function AuthForm({ onAuth, initialMode = "login", darkMode, setDarkMode }) {
                     )}
                 </AnimatePresence>
             </motion.div>
+
+            {/* ✅ Alert Modal */}
+            <AlertModal
+                show={alert.show}
+                message={alert.message}
+                title={alert.title}
+                onClose={closeAlert}
+                onConfirm={alert.onConfirm}
+                darkMode={darkMode}
+            />
         </div>
     );
 }

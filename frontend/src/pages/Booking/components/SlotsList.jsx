@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import { Clock } from "lucide-react";
 import { motion } from "framer-motion";
 import Button from "../../../components/Button";
+import AlertModal from "../../../components/AlertModal";
 
 export default function SlotsList({
     slots,
@@ -13,6 +14,20 @@ export default function SlotsList({
     fetchSlots,
     setSlots,
 }) {
+    const [alert, setAlert] = useState({
+        show: false,
+        message: "",
+        title: "Notification"
+    });
+
+    const showAlert = (message, title = "Notification") => {
+        setAlert({ show: true, message, title });
+    };
+
+    const closeAlert = () => {
+        setAlert({ show: false, message: "", title: "Notification" });
+    };
+
     const handleSlot = (slot) => {
         const disabled = !slot.available;
         const isMine = slot.playerId === user?._id;
@@ -35,7 +50,10 @@ export default function SlotsList({
     };
 
     const bookNow = async () => {
-        if (!selectedSlot) return alert("Please select a slot first!");
+        if (!selectedSlot) {
+            showAlert("Please select a slot first!");
+            return;
+        }
         try {
             setSlots((prev) =>
                 prev.map((slot) =>
@@ -48,7 +66,7 @@ export default function SlotsList({
             await fetchSlots();
         } catch (err) {
             console.error(err);
-            alert("❌ Booking failed, please try again.");
+            showAlert("❌ Booking failed, please try again.");
         }
     };
 
@@ -98,6 +116,15 @@ export default function SlotsList({
                     Book Now
                 </Button>
             </motion.div>
+
+            {/* ✅ Add AlertModal */}
+            <AlertModal
+                show={alert.show}
+                message={alert.message}
+                title={alert.title}
+                onClose={closeAlert}
+                darkMode={darkMode}
+            />
         </motion.div>
     );
 }

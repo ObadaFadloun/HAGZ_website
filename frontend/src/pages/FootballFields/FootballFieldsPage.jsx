@@ -11,6 +11,7 @@ import noFootballFields from "../../assets/EmptyState.json";
 import Button from "../../components/Button";
 import Pagination from "../../components/Pagination";
 import Modal from "../../components/Modal";
+import AlertModal from "../../components/AlertModal";
 import FieldForm from "./FieldForm";
 import FieldCard from "./components/FieldCard";
 import SearchAndFilterBar from "./components/SearchAndFilterBar";
@@ -32,6 +33,26 @@ export default function FootballFieldsPage({ user, darkMode, setDarkMode }) {
     const [editField, setEditField] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
 
+    // ✅ Alert state
+    const [alert, setAlert] = useState({
+        show: false,
+        message: "",
+        onConfirm: null,
+        title: "Notification"
+    });
+
+    const showAlert = (message, onConfirm = null, title = "Notification") => {
+        setAlert({ show: true, message, onConfirm, title });
+    };
+
+    const closeAlert = () => {
+        setAlert({ show: false, message: "", onConfirm: null, title: "Notification" });
+    };
+
+    const showNotification = (message, title = "Notification") => {
+        setAlert({ show: true, message, onConfirm: null, title });
+    };
+
     const fieldsPerPage = 6;
 
     // ✅ 1. Publicly fetch fields — no token required
@@ -43,6 +64,7 @@ export default function FootballFieldsPage({ user, darkMode, setDarkMode }) {
             setFields(data);
         } catch (err) {
             console.error("❌ Error fetching fields:", err);
+            showNotification("Failed to load football fields", "Error");
         } finally {
             setLoading(false);
         }
@@ -61,6 +83,7 @@ export default function FootballFieldsPage({ user, darkMode, setDarkMode }) {
             setShowModal(true);
         } catch (err) {
             console.error("❌ Failed to fetch field for edit:", err);
+            showNotification("Failed to load field for editing", "Error");
         }
     };
 
@@ -68,25 +91,32 @@ export default function FootballFieldsPage({ user, darkMode, setDarkMode }) {
     const handleAddField = async () => {
         await fetchFields();
         setShowModal(false);
+        showNotification("Field added successfully!", "Success");
     };
 
     const handleUpdateField = async () => {
         await fetchFields();
         setEditField(null);
         setShowModal(false);
+        showNotification("Field updated successfully!", "Success");
     };
 
     // ✅ Delete field (requires auth)
     const handleDeleteField = async (id) => {
-        if (!window.confirm("🗑️ Are you sure you want to delete this field?")) return;
-
-        try {
-            await api.delete(`/football-fields/${id}`);
-            setFields((prev) => prev.filter((field) => field._id !== id));
-        } catch (err) {
-            console.error("❌ Failed to delete field:", err);
-            alert("Failed to delete the field. Please try again.");
-        }
+        showAlert(
+            "🗑️ Are you sure you want to delete this field?",
+            async () => {
+                try {
+                    await api.delete(`/football-fields/${id}`);
+                    setFields((prev) => prev.filter((field) => field._id !== id));
+                    showNotification("Field deleted successfully!", "Success");
+                } catch (err) {
+                    console.error("❌ Failed to delete field:", err);
+                    showNotification("Failed to delete the field. Please try again.", "Error");
+                }
+            },
+            "Confirm Deletion"
+        );
     };
 
     // ✅ Filter fields
@@ -142,7 +172,7 @@ export default function FootballFieldsPage({ user, darkMode, setDarkMode }) {
                 </Button>
 
 
-                <h1 className={`text-2xl sm:text-3xl font-bold flex items-center justify-center gap-3 ${darkMode? "text-green-400" : "text-green-600"}`}>
+                <h1 className={`text-2xl sm:text-3xl font-bold flex items-center justify-center gap-3 ${darkMode ? "text-green-400" : "text-green-600"}`}>
                     <MapPin size={28} />
                     Football Fields
                 </h1>
@@ -224,6 +254,16 @@ export default function FootballFieldsPage({ user, darkMode, setDarkMode }) {
                     />
                 </Modal>
             )}
+
+            {/* ✅ Alert Modal */}
+            <AlertModal
+                show={alert.show}
+                message={alert.message}
+                title={alert.title}
+                onClose={closeAlert}
+                onConfirm={alert.onConfirm}
+                darkMode={darkMode}
+            />
         </main>
     );
 }
