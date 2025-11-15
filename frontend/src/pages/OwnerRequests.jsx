@@ -10,6 +10,8 @@ import { useNavigate } from "react-router-dom";
 import { Sun, Moon, ArrowLeft } from "lucide-react";
 import Button from "../components/Button";
 import api from "../utils/api";
+import LoadingScreen from "../components/LoadingScreen";
+import Pagination from "../components/Pagination";
 
 export default function OwnerRequests({ darkMode, setDarkMode }) {
     const [requests, setRequests] = useState([]);
@@ -28,6 +30,7 @@ export default function OwnerRequests({ darkMode, setDarkMode }) {
 
     const fetchRequests = async () => {
         try {
+            setLoading(true)
             const res = await api.get(`/owner-requests?type=${type}`);
             setRequests(res.data.data.requests);
         } catch (err) {
@@ -58,16 +61,7 @@ export default function OwnerRequests({ darkMode, setDarkMode }) {
     };
 
     if (loading) {
-        return (
-            <motion.div
-                className={`min-h-screen w-screen flex flex-col justify-center items-center ${darkMode && "bg-gradient-to-br from-gray-900 to-gray-800 text-gray-50"}`}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-            >
-                <Lottie animationData={loadingLottie} loop className="w-56 h-56 mb-6" />
-                <p className="text-lg animate-pulse">Loading requests...</p>
-            </motion.div>
-        );
+        return <LoadingScreen darkMode={darkMode} message="Loading requests..." />
     }
 
     return (
@@ -232,11 +226,11 @@ export default function OwnerRequests({ darkMode, setDarkMode }) {
                     ))}
                     {/* Centered Pagination */}
                     <motion.div className="fixed bottom-6 left-1/2 transform -translate-x-1/2">
-                        {/* <Pagination
+                        <Pagination
                             currentPage={currentPage}
                             totalPages={totalPages}
                             onPageChange={handlePageChange}
-                        /> */}
+                        />
                     </motion.div>
                 </motion.div>
             )}

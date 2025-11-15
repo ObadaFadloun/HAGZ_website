@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { ArrowLeft, Sun, Moon, Users } from "lucide-react";
 import api from "../utils/api";
 import Lottie from "lottie-react";
-import loadingLottie from "../assets/loading.json";
+import LoadingScreen from "../components/LoadingScreen";
 import noUsers from "../assets/EmptyState.json";
 import Button from "../components/Button";
 import Pagination from "../components/Pagination";
@@ -84,12 +84,9 @@ export default function AdminUsers({ darkMode, setDarkMode }) {
         );
     };
 
-    if (loading)
-        return (
-            <div className={`flex justify-center items-center h-screen ${darkMode ? "bg-gray-900 text-gray-100" : "bg-gray-50 text-gray-800"}`}>
-                <Lottie animationData={loadingLottie} loop className="w-48 h-48" />
-            </div>
-        );
+    if (loading) {
+        return <LoadingScreen darkMode={darkMode} message="Loading Users..." />
+    }
 
     return (
         <main className={`min-h-screen p-8 transition-all duration-300 ${darkMode ? "bg-gray-900 text-gray-100" : "bg-gray-50 text-gray-800"}`}>

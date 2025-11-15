@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Button from "../components/Button";
 import AlertModal from "../components/AlertModal";
 import api from "../utils/api";
+import LoadingScreen from "../components/LoadingScreen";
 
 function AuthForm({ onAuth, initialMode = "login", darkMode, setDarkMode }) {
     const [isSignUp, setIsSignUp] = useState(initialMode === "signup");
@@ -125,6 +126,10 @@ function AuthForm({ onAuth, initialMode = "login", darkMode, setDarkMode }) {
             setLoading(false);
         }
     };
+
+    if (loading) {
+        return <LoadingScreen darkMode={darkMode} />
+    }
 
     return (
         <div
@@ -325,8 +330,8 @@ function AuthForm({ onAuth, initialMode = "login", darkMode, setDarkMode }) {
                         <Button
                             disabled={loading}
                             className={`w-full rounded-xl shadow-md text-white ${loading
-                                    ? "bg-gray-500 cursor-not-allowed"
-                                    : "bg-gradient-to-r from-green-600 to-green-800"
+                                ? "bg-gray-500 cursor-not-allowed"
+                                : "bg-gradient-to-r from-green-600 to-green-800"
                                 }`}
                         >
                             {loading
@@ -354,8 +359,8 @@ function AuthForm({ onAuth, initialMode = "login", darkMode, setDarkMode }) {
                             <Button
                                 onClick={() => setForgotPasswordMode(true)}
                                 className={`underline font-medium ${darkMode
-                                        ? "text-green-400 hover:text-green-300"
-                                        : "text-green-700 hover:text-green-800"
+                                    ? "text-green-400 hover:text-green-300"
+                                    : "text-green-700 hover:text-green-800"
                                     }`}
                             >
                                 Forgot password?
@@ -375,8 +380,8 @@ function AuthForm({ onAuth, initialMode = "login", darkMode, setDarkMode }) {
                             <Button
                                 onClick={() => setForgotPasswordMode(false)}
                                 className={`underline font-medium ${darkMode
-                                        ? "text-green-400 hover:text-green-300"
-                                        : "text-green-700 hover:text-green-800"
+                                    ? "text-green-400 hover:text-green-300"
+                                    : "text-green-700 hover:text-green-800"
                                     }`}
                             >
                                 ← Back to login
@@ -397,8 +402,8 @@ function AuthForm({ onAuth, initialMode = "login", darkMode, setDarkMode }) {
                             <Button
                                 onClick={toggleForm}
                                 className={`underline font-medium ${darkMode
-                                        ? "text-green-400 hover:text-green-300"
-                                        : "text-green-700 hover:text-green-800"
+                                    ? "text-green-400 hover:text-green-300"
+                                    : "text-green-700 hover:text-green-800"
                                     }`}
                             >
                                 {isSignUp ? "Log In" : "Sign Up"}

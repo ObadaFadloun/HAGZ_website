@@ -1,11 +1,10 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import Lottie from "lottie-react";
-import loadingLottie from "../assets/loading.json";
 import Button from "../components/Button";
 import Sidebar from "../components/Sidebar";
 import api from "../utils/api";
 import { capitalize } from "../utils/format";
+import LoadingScreen from "../components/LoadingScreen";
 
 export default function OwnerDashboard({ user, onLogout, darkMode, setDarkMode }) {
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
@@ -38,17 +37,7 @@ export default function OwnerDashboard({ user, onLogout, darkMode, setDarkMode }
     }, []);
 
     if (loading) {
-        return (
-            <motion.div
-                className={`min-h-screen w-screen flex flex-col justify-center items-center ${darkMode && "bg-gradient-to-br from-gray-900 to-gray-800 text-gray-50"
-                    }`}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-            >
-                <Lottie animationData={loadingLottie} loop className="w-56 h-56 mb-6" />
-                <p className="text-lg animate-pulse">Loading dashboard...</p>
-            </motion.div>
-        );
+        return <LoadingScreen darkMode={darkMode} message="Loading dashboard..." />
     }
 
     if (error)

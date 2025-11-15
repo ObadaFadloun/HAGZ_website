@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 import Lottie from "lottie-react";
 
 import api from "../../utils/api";
-import loadingLottie from "../../assets/loading.json";
 import noFootballFields from "../../assets/EmptyState.json";
 
 import Button from "../../components/Button";
@@ -15,6 +14,7 @@ import AlertModal from "../../components/AlertModal";
 import FieldForm from "./FieldForm";
 import FieldCard from "./components/FieldCard";
 import SearchAndFilterBar from "./components/SearchAndFilterBar";
+import LoadingScreen from "../../components/LoadingScreen";
 
 export default function FootballFieldsPage({ user, darkMode, setDarkMode }) {
     const navigate = useNavigate();
@@ -150,12 +150,9 @@ export default function FootballFieldsPage({ user, darkMode, setDarkMode }) {
         }, 100);
     };
 
-    if (loading)
-        return (
-            <div className={`flex justify-center items-center min-h-[100vh] ${darkMode ? "bg-gray-900 text-gray-100" : "bg-gray-50 text-gray-800"}`}>
-                <Lottie animationData={loadingLottie} loop className="w-40 h-40 sm:w-48 sm:h-48" />
-            </div>
-        );
+    if (loading) {
+        return <LoadingScreen darkMode={darkMode} message="Loading Football Fields..." />
+    }
 
     return (
         <main className={`min-h-screen overflow-y-auto pb-24 px-4 sm:px-6 md:px-8 transition-all duration-300 ${user ? '' : 'pt-30'} ${darkMode ? "bg-gray-900 text-gray-100" : "bg-gray-50 text-gray-800"}`}>

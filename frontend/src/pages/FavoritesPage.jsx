@@ -51,13 +51,6 @@ export default function FavoritesPage({ user, darkMode, setDarkMode }) {
             </div>
         );
 
-    if (favorites.length === 0)
-        return (
-            <div className={`text-center mt-20 ${darkMode ? "text-gray-200" : "text-gray-500"}`}>
-                You have no favorite football fields yet.
-            </div>
-        );
-
     return (
         <main className={`container mx-auto p-4 min-h-screen ${darkMode ? "bg-gray-900 text-gray-100" : "bg-gray-100 text-gray-900"}`}>
             {/* Header */}
@@ -86,42 +79,45 @@ export default function FavoritesPage({ user, darkMode, setDarkMode }) {
             </div>
 
             {/* Favorite Fields Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {favorites.map((field, idx) => (
-                    <motion.div
-                        key={field._id}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.4, delay: idx * 0.1 }}
-                        whileHover={{ scale: 1.03, boxShadow: "0px 10px 20px rgba(0,0,0,0.2)" }}
-                        className={`p-4 rounded-lg shadow-md cursor-pointer transition relative ${darkMode ? "bg-gray-800" : "bg-white"}`}
-                        onClick={() => navigate(`/book/${field._id}`)}
-                    >
-                        {/* Heart button to remove from favorites */}
-                        <Button
-                            onClick={(e) => {
-                                e.stopPropagation();
-                                handleToggleFavorite(field._id);
-                            }}
-                            className="absolute top-2 right-2 text-red-500 hover:scale-110 transition"
+            {favorites.length === 0 ?
+                <div className={`flex h-screen justify-center items-center ${darkMode ? "text-gray-200 bg-gray-900" : "text-gray-500"}`}>
+                    You have no favorite football fields yet.
+                </div> : <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {favorites.map((field, idx) => (
+                        <motion.div
+                            key={field._id}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.4, delay: idx * 0.1 }}
+                            whileHover={{ scale: 1.03, boxShadow: "0px 10px 20px rgba(0,0,0,0.2)" }}
+                            className={`p-4 rounded-lg shadow-md cursor-pointer transition relative ${darkMode ? "bg-gray-800" : "bg-white"}`}
+                            onClick={() => navigate(`/book/${field._id}`)}
                         >
-                            <Heart size={22} fill="red" />
-                        </Button>
+                            {/* Heart button to remove from favorites */}
+                            <Button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleToggleFavorite(field._id);
+                                }}
+                                className="absolute top-2 right-2 text-red-500 hover:scale-110 transition"
+                            >
+                                <Heart size={22} fill="red" />
+                            </Button>
 
-                        {field.images && field.images[0] && (
-                            <img
-                                src={field.images[0].url}
-                                alt={field.name}
-                                className="w-full h-40 object-cover rounded-md mb-3"
-                            />
-                        )}
-                        <h2 className="font-semibold text-lg mb-1">{field.name}</h2>
-                        <p className="text-sm opacity-70 mb-1">{field.location}</p>
-                        <p className="text-sm font-medium">Price: ${field.pricing}</p>
-                        <p className="text-sm">Rating: {field.averageRating?.toFixed(1)} ⭐</p>
-                    </motion.div>
-                ))}
-            </div>
+                            {field.images && field.images[0] && (
+                                <img
+                                    src={field.images[0].url}
+                                    alt={field.name}
+                                    className="w-full h-40 object-cover rounded-md mb-3"
+                                />
+                            )}
+                            <h2 className="font-semibold text-lg mb-1">{field.name}</h2>
+                            <p className="text-sm opacity-70 mb-1">{field.location}</p>
+                            <p className="text-sm font-medium">Price: ${field.pricing}</p>
+                            <p className="text-sm">Rating: {field.averageRating?.toFixed(1)} ⭐</p>
+                        </motion.div>
+                    ))}
+                </div>}
         </main>
     );
 }

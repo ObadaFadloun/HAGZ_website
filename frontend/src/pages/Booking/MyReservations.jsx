@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Sun, Moon, Edit, Trash2, LayoutGrid, Table } from "lucide-react";
-import Lottie from "lottie-react";
-import loadingLottie from "../../assets/loading.json";
 import empty from "../../assets/empty.json";
 import api from "../../utils/api";
 import ReservationCard from "./components/ReservationCard";
@@ -11,6 +9,7 @@ import Button from "../../components/Button";
 import Pagination from "../../components/Pagination";
 import ReservationsTable from "./components/ReservationsTable";
 import AlertModal from "../../components/AlertModal";
+import LoadingScreen from "../../components/LoadingScreen";
 
 export default function MyReservations({ user, darkMode, setDarkMode }) {
     const [loading, setLoading] = useState(true);
@@ -132,15 +131,7 @@ export default function MyReservations({ user, darkMode, setDarkMode }) {
 
     // ✅ Loading state
     if (loading) {
-        return (
-            <div
-                className={`fixed inset-0 flex flex-col items-center justify-center ${darkMode ? "bg-gray-900 text-gray-300" : "bg-gray-50 text-gray-700"
-                    }`}
-            >
-                <Lottie animationData={loadingLottie} loop className="w-40 h-40 mb-6" />
-                <p>Loading reservations...</p>
-            </div>
-        );
+        return <LoadingScreen darkMode={darkMode} message="Loading reservations..." />
     }
 
     // ✅ Empty state
