@@ -19,6 +19,7 @@ import AdminUsers from "./pages/AdminUsers";
 import FootballFieldsPage from "./pages/FootballFields/FootballFieldsPage";
 import BookingPage from "./pages/Booking/BookingPage";
 import Reservations from "./pages/Booking/MyReservations";
+import FavoritesPage from "./pages/FavoritesPage";
 
 function AppContent() {
   const [user, setUser] = useState(null);
@@ -171,6 +172,8 @@ function AppContent() {
           <Route path="/users" element={<AdminUsers darkMode={darkMode} setDarkMode={setDarkMode} />} />
 
           <Route path="/football-fields" element={<FootballFieldsPage user={user} darkMode={darkMode} setDarkMode={setDarkMode} />} />
+
+          <Route path="/my-favorite-fields" element={<FavoritesPage user={user} darkMode={darkMode} setDarkMode={setDarkMode}/>} />
 
           {/* SETTINGS */}
           <Route

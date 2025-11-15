@@ -147,7 +147,7 @@ export default function LandingPage({ darkMode }) {
           </motion.h3>
 
           <div className="overflow-hidden" ref={emblaRef}>
-            <div className="flex gap-6">
+            <div className="flex items-center justify-center gap-6">
               {popularFields.map((field, i) => (
                 <motion.div
                   key={i}

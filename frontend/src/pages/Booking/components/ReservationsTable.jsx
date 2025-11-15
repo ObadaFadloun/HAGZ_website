@@ -41,17 +41,18 @@ export default function ReservationsTable({
                         <AnimatePresence>
                             {reservations.map((r) => {
                                 const status = r.status;
+                                const isFutureDate = new Date(r.date) - new Date() >= 2;
 
-                                const canEdit = status !== "completed" &&
-                                    (userRole === "admin" ||
+                                const canEdit = isFutureDate && status === "active"
+                                    && (userRole === "admin" ||
                                         r.owner?.id === user.id ||
                                         r.player?.id === user.id)
 
-                                const canReject = status !== "completed" &&
+                                const canReject = isFutureDate && status === "active" &&
                                     (userRole === "admin" ||
                                         r.owner?.id === user.id)
 
-                                const canDelete = status !== "completed" && r.player?.id === user._id;
+                                const canDelete = isFutureDate && status === "active" && r.player?.id === user._id;
 
                                 return (
                                     <motion.tr
@@ -132,7 +133,7 @@ export default function ReservationsTable({
                         userRole={userRole}
                         onEdit={() => setEditModal({ show: true, reservation: r })}
                         onDelete={handleDelete}
-                        onReject={handleReject} 
+                        onReject={handleReject}
                         darkMode={darkMode}
                     />
                 ))}
