@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import api from "../../utils/api";
 
-import LoadingScreen from "./components/LoadingScreen";
+import LoadingScreen from "../../components/LoadingScreen";
 import CoverSection from "./components/CoverSection";
 import VideoReviewSection from "./components/VideoReviewSection"
 import MapSection from "./components/MapSection";
@@ -22,6 +22,7 @@ export default function BookingPage({ user, darkMode, setDarkMode, onBooked }) {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [field, setField] = useState(null);
+    const [isOwnedByCurrentUser, setIsOwnedByCurrentUser] = useState(false);
     const [BookedSlots, setBookedSlots] = useState([]);
 
     const [selectedDate, setSelectedDate] = useState(() => {
@@ -32,6 +33,7 @@ export default function BookingPage({ user, darkMode, setDarkMode, onBooked }) {
     const [slots, setSlots] = useState([]);
 
     const [reviews, setReviews] = useState([]);
+    const [isFavorite, setIsFavorite] = useState(false);
     const [loadingReviews, setLoadingReviews] = useState(true);
 
     const [alert, setAlert] = useState({
@@ -54,6 +56,7 @@ export default function BookingPage({ user, darkMode, setDarkMode, onBooked }) {
             const res = await api.get(`/football-fields/${id}`);
             const fieldData = res?.data?.data?.field || res?.data?.data || res?.data;
             setField(fieldData);
+            setIsOwnedByCurrentUser(fieldData.ownerId?.id === user.id)
 
             const resRes = await api.get(`/reservations/field/${id}`);
             const reservations = Array.isArray(resRes?.data?.data)
@@ -85,6 +88,36 @@ export default function BookingPage({ user, darkMode, setDarkMode, onBooked }) {
         fetchField();
         fetchReviews();
     }, [id]);
+
+    useEffect(() => {
+        const fetchFavorites = async () => {
+            if (!user || !field?._id) return;
+
+            try {
+                const res = await api.get('/users/favorites');
+                const favs = res.data.data;
+                const fav = favs.some(f => f._id.toString() === field._id.toString());
+                setIsFavorite(fav);
+            } catch (err) {
+                console.error(err);
+            }
+        };
+
+        fetchFavorites();
+    }, [user, field]);
+
+
+    const handleToggleFavorite = async () => {
+        if (!field?._id) return;
+
+        try {
+            await api.patch(`/users/${field._id}/favorite`);
+            setIsFavorite(prev => !prev);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
 
     const fetchReservationsForField = async () => {
         if (!field?._id) return;
@@ -313,15 +346,16 @@ export default function BookingPage({ user, darkMode, setDarkMode, onBooked }) {
                         <div className="text-center text-sm opacity-70 mt-4">Loading reviews...</div>
                     ) : (
                         <ReviewsSection
-                            reviews={reviews}
-                            darkMode={darkMode}
                             user={user}
+                            darkMode={darkMode}
+                            reviews={reviews}
                             onAddComment={handleAddComment}
                             onDeleteReview={handleDeleteReview}
+                            onToggleFavorite={handleToggleFavorite}
+                            isFavorite={isFavorite}
+                            isOwnedByCurrentUser={isOwnedByCurrentUser}
                         />
                     )}
-
-
                 </motion.article>
 
                 <motion.aside

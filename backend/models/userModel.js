@@ -56,6 +56,12 @@ const userSchema = new mongoose.Schema(
       },
       select: false
     },
+    favorites: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'FootballField'
+      }
+    ],
     passwordChangedAt: Date,
     passwordResetToken: String,
     passwordResetExpires: Date,
