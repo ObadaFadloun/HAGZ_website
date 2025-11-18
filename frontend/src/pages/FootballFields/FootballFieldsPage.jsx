@@ -213,13 +213,7 @@ export default function FootballFieldsPage({ user, darkMode, setDarkMode }) {
             )}
 
             {currentFields.length === 0 ? (
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex flex-col items-center text-center mt-20">
-                    <Lottie animationData={noFootballFields} loop className="w-52 h-52 sm:w-64 sm:h-64" />
-                    <p className="text-base sm:text-lg font-semibold opacity-80 mt-4">No football fields found.</p>
-                    <Button className="mt-6 text-white bg-gradient-to-r from-green-600 to-green-800 font-bold hover:shadow-xl" onClick={() => fetchFields()}>
-                        Refresh Page
-                    </Button>
-                </motion.div>
+                <EmptyScreen darkMode={darkMode} message="No Football Fields Found" />
             ) : (
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
                     {currentFields.map((field, i) => (

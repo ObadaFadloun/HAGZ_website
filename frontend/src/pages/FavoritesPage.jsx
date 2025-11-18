@@ -6,6 +6,7 @@ import { Sun, Moon, ArrowLeft, Heart } from "lucide-react";
 import LoadingScreen from "../components/LoadingScreen";
 import Button from "../components/Button";
 import formatRating from "../utils/format";
+import EmptyScreen from "../components/EmptyScreen";
 
 export default function FavoritesPage({ user, darkMode, setDarkMode }) {
     const navigate = useNavigate();
@@ -87,12 +88,7 @@ export default function FavoritesPage({ user, darkMode, setDarkMode }) {
 
             {/* Empty State */}
             {favorites.length === 0 ? (
-                <div
-                    className={`flex justify-center items-center h-[60vh] text-center text-lg ${darkMode ? "text-gray-300" : "text-gray-500"
-                        }`}
-                >
-                    You have no favorite football fields yet.
-                </div>
+                <EmptyScreen darkMode={darkMode} message="You have no favorite football fields yet." />
             ) : (
                 /* Favorite Fields Grid - Highly Responsive */
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">

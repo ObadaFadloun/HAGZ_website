@@ -9,6 +9,7 @@ import noUsers from "../assets/EmptyState.json";
 import Button from "../components/Button";
 import Pagination from "../components/Pagination";
 import AlertModal from "../components/AlertModal";
+import EmptyScreen from "../components/EmptyScreen";
 
 export default function AdminUsers({ darkMode, setDarkMode }) {
     const [users, setUsers] = useState([]);
@@ -120,21 +121,7 @@ export default function AdminUsers({ darkMode, setDarkMode }) {
 
             {/* No Users */}
             {currentUsers.length === 0 ? (
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4 }}
-                    className={`flex flex-col text-center items-center py-20 rounded-xl shadow-md ${darkMode ? "bg-gray-800" : "bg-white"}`}
-                >
-                    <Lottie animationData={noUsers} loop className="w-48 h-48" />
-                    <p className="text-lg font-bold opacity-70">No users found yet.</p>
-                    <Button
-                        className="mt-6 text-white bg-gradient-to-r from-green-600 to-green-800 font-bold hover:shadow-xl"
-                        onClick={() => window.location.reload()}
-                    >
-                        Refresh Page
-                    </Button>
-                </motion.div>
+                <EmptyScreen darkMode={darkMode} message="No users found yet." />
             ) : (
                 <>
                     {/* Users Table */}
